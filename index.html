@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <!-- Google API client (GAPI) -->
+<script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+
+<!-- Google Identity Services (GIS) -->
+<script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Page web</title>
@@ -88,6 +93,7 @@
         <button onclick="window.location.href='https://www.ecoledirecte.com/login?cameFrom=%2FAccueil'">Ecole Direct</button>
         <button onclick="window.location.href='https://www.google.com'">Google</button>
         <button onclick="window.location.href='https://www.lri.fr/~jacquot/progWeb/cours4/cours4.pdf'">Informations</button>
+        <button id="google-login-btn">Connexion Google</button>
     </div>
 
     <div class="bouton-ajout-image" style="text-align:center; margin: 30px 0;">
