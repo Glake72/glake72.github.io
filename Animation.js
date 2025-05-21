@@ -1,18 +1,21 @@
 // --- Ton code d'animation existant (si tu en as un) peut être placé ici, au début du fichier.
-// Par exemple :
-// function fondAnime() { /* ... */ }
-// @keyframes fondAnime { /* ... */ }
-// N'oublie pas de laisser l'animation CSS dans le <style> de l'HTML.
+// Assure-toi que les keyframes CSS pour 'fondAnime' sont bien dans le bloc <style> de l'HTML.
+// Si Animation.js contient du JS pour l'animation, il peut rester ici.
 // ---
 
 // --- DÉBUT DU CODE GOOGLE ET GESTION DES FICHIERS ---
 
 const previewContainer = document.getElementById('preview-container');
+const messageDisplay = document.getElementById('message-display');
 
-// Tes identifiants Google. Garde-les secrets en production !
+// **ATTENTION : Ces identifiants sont exposés côté client. Ce n'est PAS SÛR pour une application en production.**
+// Pour une application réelle, tu devrais utiliser un serveur backend pour interagir avec l'API Google Drive
+// afin de protéger ta clé API et tes identifiants de service.
 const CLIENT_ID = '716108448607-4d46lrnamcdkk07jo2gaq7bc9pu47ag3.apps.googleusercontent.com';
 const API_KEY = 'AIzaSyBeHW_Izkd7InzeahDl6gGxI5OMyOhiFm8';
 const SCOPES = 'https://www.googleapis.com/auth/drive.file'; // Permet d'accéder aux fichiers créés par l'app
+
+const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // Limite de 5 Mo pour les fichiers (5 * 1024 * 1024 bytes)
 
 let tokenClient; // Utilisé par Google Identity Services (GIS) pour la connexion
 let accessToken = null; // Le token d'accès obtenu après connexion
@@ -22,14 +25,37 @@ let gapiIsReady = false;
 let gisIsReady = false;
 
 /**
+ * Affiche un message à l'utilisateur de manière non bloquante.
+ * @param {string} message - Le texte du message à afficher.
+ * @param {string} type - Le type de message ('success', 'error', 'info').
+ */
+function displayMessage(message, type) {
+    if (!messageDisplay) {
+        // Fallback to alert if messageDisplay element is not found
+        alert(message);
+        return;
+    }
+    messageDisplay.textContent = message;
+    messageDisplay.className = ''; // Réinitialise les classes
+    messageDisplay.classList.add(type);
+    messageDisplay.style.display = 'block';
+
+    // Cache le message après 5 secondes
+    setTimeout(() => {
+        messageDisplay.style.display = 'none';
+    }, 5000);
+}
+
+/**
  * Active le bouton de connexion Google lorsque les deux bibliothèques (GAPI et GIS) sont chargées.
  */
 function enableGoogleLoginButton() {
     if (gapiIsReady && gisIsReady) {
         const googleLoginBtn = document.getElementById('google-login-btn');
-        if (googleLoginBtn) { // Vérifie si le bouton existe avant d'interagir
+        if (googleLoginBtn) {
             googleLoginBtn.disabled = false;
             googleLoginBtn.textContent = 'Connexion Google';
+            // Le gestionnaire de clic est attaché une seule fois dans DOMContentLoaded
         }
         console.log("🟢 Les API Google (GAPI et GIS) sont prêtes ! Bouton de connexion activé.");
     }
@@ -38,7 +64,6 @@ function enableGoogleLoginButton() {
 /**
  * Fonction de rappel appelée par le script 'api.js' de Google (GAPI) une fois qu'il est chargé.
  * Charge le client d'API GAPI.
- * Cette fonction est rendue globale via `window.gapiLoaded`.
  */
 function gapiLoaded() {
     console.log("➡️ gapi.js script chargé. Chargement du client GAPI...");
@@ -60,43 +85,45 @@ async function initializeGapiClient() {
         enableGoogleLoginButton(); // Tente d'activer le bouton si GIS est aussi prêt
     } catch (error) {
         console.error("❌ Erreur lors de l'initialisation du client GAPI:", error);
-        alert("Une erreur est survenue lors de l'initialisation de Google Drive API. Vérifiez la console.");
+        displayMessage("Une erreur est survenue lors de l'initialisation de Google Drive API. Vérifiez la console.", 'error');
     }
 }
 
 /**
  * Fonction de rappel appelée par le script 'gsi/client.js' de Google (GIS) une fois qu'il est chargé.
  * Initialise le client de jeton pour l'authentification.
- * Cette fonction est rendue globale via `window.gisLoaded`.
  */
 function gisLoaded() {
     console.log("➡️ gsi/client.js script chargé. Initialisation du client de jeton GIS...");
     tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
         scope: SCOPES,
-        // Callback exécuté après que l'utilisateur se soit connecté ou ait donné son consentement
         callback: (tokenResponse) => {
             if (tokenResponse.error) {
-                alert('Erreur de connexion Google : ' + tokenResponse.error);
+                displayMessage('Erreur de connexion Google : ' + tokenResponse.error, 'error');
                 console.error('❌ Erreur GIS:', tokenResponse.error);
+                // Si l'utilisateur refuse ou quitte, l'état peut rester "Déconnecté"
+                const googleUserSpan = document.getElementById('google-user');
+                if (googleUserSpan) {
+                    googleUserSpan.textContent = "Déconnecté";
+                }
                 return;
             }
-            // Si la connexion réussit, stocke le token d'accès
             accessToken = tokenResponse.access_token;
             const googleUserSpan = document.getElementById('google-user');
             if (googleUserSpan) {
                 googleUserSpan.textContent = "Connecté";
             }
+            displayMessage('Connecté à Google !', 'success');
             console.log('✅ Connecté à Google, token d\'accès obtenu.');
         },
     });
     gisIsReady = true;
-    console.log('✅ Client de jeton GIS initialisé. gisIsReady =', gisIsReady);
+    console.log('✅ Client de jeton GIS initialisé. gisIsReady =', gIsReady);
     enableGoogleLoginButton(); // Tente d'activer le bouton si GAPI est aussi prêt
 }
 
-// Rend les fonctions gapiLoaded et gisLoaded accessibles globalement.
-// C'est CRUCIAL pour que les scripts Google les trouvent et les appellent automatiquement.
+// Rend les fonctions gapiLoaded et gisLoaded accessibles globalement pour que les scripts Google les appellent.
 window.gapiLoaded = gapiLoaded;
 window.gisLoaded = gisLoaded;
 
@@ -108,13 +135,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (googleLoginBtn) {
         googleLoginBtn.disabled = true; // Désactive le bouton initialement
         googleLoginBtn.textContent = 'Chargement Google Connexion...'; // Message d'attente
-        // Attache le gestionnaire de clic après que le bouton a été trouvé
+        // Attache le gestionnaire de clic une seule fois
         googleLoginBtn.onclick = () => {
-            // Le clic n'est possible que si le bouton est activé par enableGoogleLoginButton()
             if (tokenClient) {
                 tokenClient.requestAccessToken();
             } else {
-                alert("La bibliothèque de connexion Google n'est pas encore chargée. Veuillez patienter.");
+                displayMessage("La bibliothèque de connexion Google n'est pas encore chargée. Veuillez patienter.", 'info');
             }
         };
     }
@@ -127,6 +153,11 @@ document.addEventListener('DOMContentLoaded', () => {
             let saved = JSON.parse(localStorage.getItem('fichiers') || '[]');
 
             files.forEach((file) => {
+                if (file.size > MAX_FILE_SIZE_BYTES) {
+                    displayMessage(`Le fichier "${file.name}" (${(file.size / (1024 * 1024)).toFixed(2)} Mo) dépasse la limite de ${MAX_FILE_SIZE_BYTES / (1024 * 1024)} Mo et ne sera pas sauvegardé.`, 'error');
+                    return; // Passe au fichier suivant
+                }
+
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     createPreviewBox(file.name, e.target.result, file.type);
@@ -135,6 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
                 reader.readAsDataURL(file);
             });
+            event.target.value = ''; // Réinitialise l'input pour pouvoir importer le même fichier à nouveau
         });
     }
 
@@ -164,13 +196,15 @@ function dataURLtoBlob(dataurl) {
  */
 async function uploadToDrive(fileName, dataURL, fileType) {
     if (!accessToken) {
-        alert("Connectez-vous à Google avant d'envoyer sur Drive.");
+        displayMessage("Connectez-vous à Google avant d'envoyer sur Drive.", 'info');
         return;
     }
-    if (!gapi.client.drive) {
-        alert("L'API Google Drive n'est pas encore chargée. Veuillez patienter ou réessayer.");
-        return;
-    }
+    // Vérifie si gapi.client.drive est initialisé
+    // Note: gapi.client.drive n'est pas directement disponible après gapi.client.init(),
+    // mais plutôt après que les APIs découvertes (discoveryDocs) soient chargées et le client Drive soit "prêt" à être appelé.
+    // L'erreur "API Google Drive non chargée" peut survenir si la discoveryDocs n'a pas fini de charger.
+    // L'appel `gapi.client.init()` assure que les documents de découverte sont chargés.
+    // Si des problèmes persistent, vérifie la console pour les erreurs de chargement de l'API Drive.
 
     const fileBlob = dataURLtoBlob(dataURL);
     const metadata = {
@@ -183,21 +217,27 @@ async function uploadToDrive(fileName, dataURL, fileType) {
     form.append('file', fileBlob);
 
     try {
-        const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
-    method: 'POST',
-    headers: {
-        'Authorization': 'Bearer ' + accessToken
-    },
-    body: form
-});
-const result = await response.json();
-alert('Fichier envoyé sur Google Drive ! ID: ' + result.id);
-console.log('Fichier uploadé:', result);
-        alert('Fichier envoyé sur Google Drive ! ID: ' + res.result.id);
-        console.log('Fichier uploadé:', res.result);
+        displayMessage(`Envoi de "${fileName}" sur Google Drive...`, 'info');
+        // Utilisation de fetch API pour l'upload
+        const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + accessToken
+            },
+            body: form
+        });
+
+        if (!response.ok) { // Si la réponse HTTP n'est pas un succès (ex: 4xx, 5xx)
+            const errorData = await response.json();
+            throw new Error(errorData.error.message || 'Erreur inconnue lors de l\'envoi du fichier.');
+        }
+
+        const result = await response.json(); // Parse la réponse JSON
+        displayMessage(`Fichier "${result.name}" envoyé sur Google Drive ! ID: ${result.id}`, 'success');
+        console.log('Fichier uploadé:', result);
     } catch (err) {
         console.error('❌ Erreur lors de l\'envoi sur Drive:', err);
-        alert('Erreur lors de l\'envoi sur Drive: ' + (err.result && err.result.error ? err.result.error.message : err.message || "Erreur inconnue."));
+        displayMessage(`Erreur lors de l'envoi sur Drive: ${err.message}`, 'error');
     }
 }
 
@@ -209,81 +249,57 @@ console.log('Fichier uploadé:', result);
  */
 function createPreviewBox(fileName, dataURL, fileType) {
     const previewBox = document.createElement('div');
-    previewBox.style.border = '2px solid #00ff15';
-    previewBox.style.borderRadius = '15px';
-    previewBox.style.padding = '10px';
-    previewBox.style.background = '#f0f0f0';
-    previewBox.style.position = 'relative';
-    previewBox.style.width = '150px';
-    previewBox.style.textAlign = 'center';
+    previewBox.className = 'preview-box'; // Ajout de la classe pour le style CSS
 
     let content;
     if (fileType.startsWith('image/')) {
         content = document.createElement('img');
         content.src = dataURL;
-        content.style.maxWidth = '100%';
-        content.style.maxHeight = '100px';
         content.alt = fileName;
     } else {
         content = document.createElement('div');
         content.textContent = fileName;
-        content.style.margin = '20px 0';
+        content.className = 'file-name';
     }
     previewBox.appendChild(content);
+
+    // Conteneur pour les boutons en haut
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'preview-buttons-container';
 
     // Télécharger bouton
     const downloadBtn = document.createElement('a');
     downloadBtn.textContent = 'Télécharger';
     downloadBtn.href = dataURL;
     downloadBtn.download = fileName;
-    downloadBtn.style.position = 'absolute';
-    downloadBtn.style.left = '5px';
-    downloadBtn.style.top = '5px';
-    downloadBtn.style.background = '#00ff15';
-    downloadBtn.style.color = '#000';
-    downloadBtn.style.border = 'none';
-    downloadBtn.style.borderRadius = '10px';
-    downloadBtn.style.padding = '5px 10px';
-    downloadBtn.style.textDecoration = 'none';
-    downloadBtn.style.cursor = 'pointer';
-    previewBox.appendChild(downloadBtn);
+    downloadBtn.className = 'download-btn'; // Ajout de la classe pour le style CSS
+    buttonsContainer.appendChild(downloadBtn);
 
     // Enregistrer sur Drive bouton
     const driveBtn = document.createElement('button');
     driveBtn.textContent = 'Enregistrer sur Drive';
-    driveBtn.style.position = 'absolute';
-    driveBtn.style.top = '35px';
-    driveBtn.style.left = '5px';
-    driveBtn.style.background = '#4285F4';
+    driveBtn.className = 'drive-btn'; // Ajout de la classe pour le style CSS
+    driveBtn.style.background = '#4285F4'; // Couleur spécifique pour le bouton Drive
     driveBtn.style.color = '#fff';
-    driveBtn.style.border = 'none';
-    driveBtn.style.borderRadius = '10px';
-    driveBtn.style.padding = '5px 10px';
-    driveBtn.style.cursor = 'pointer';
     driveBtn.onclick = function() {
         uploadToDrive(fileName, dataURL, fileType);
     };
-    previewBox.appendChild(driveBtn);
+    buttonsContainer.appendChild(driveBtn);
 
-    // Supprimer bouton
+    previewBox.appendChild(buttonsContainer); // Ajoute le conteneur de boutons
+
+    // Supprimer bouton (positionné en bas à droite)
     const removeBtn = document.createElement('button');
     removeBtn.textContent = 'Supprimer';
-    removeBtn.style.position = 'absolute';
-    removeBtn.style.top = '90px';
-    removeBtn.style.right = '5px';
-    removeBtn.style.background = '#ff4d4d';
-    removeBtn.style.color = '#fff';
-    removeBtn.style.border = 'none';
-    removeBtn.style.borderRadius = '10px';
-    removeBtn.style.padding = '5px 10px';
-    removeBtn.style.cursor = 'pointer';
+    removeBtn.className = 'remove-btn'; // Ajout de la classe pour le style CSS
     removeBtn.onclick = function() {
         previewBox.remove();
         let saved = JSON.parse(localStorage.getItem('fichiers') || '[]');
         saved = saved.filter(f => f.name !== fileName);
         localStorage.setItem('fichiers', JSON.stringify(saved));
+        displayMessage(`Fichier "${fileName}" supprimé.`, 'info');
     };
-    previewBox.appendChild(removeBtn);
+    previewBox.appendChild(removeBtn); // Ajoute le bouton supprimer directement à previewBox
 
     previewContainer.appendChild(previewBox);
 }
