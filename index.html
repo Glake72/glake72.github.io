@@ -107,13 +107,25 @@
 <script>
 const previewContainer = document.getElementById('preview-container');
 
-// Tes identifiants Google. Garde-les secrets en production !
 const CLIENT_ID = '716108448607-4d46lrnamcdkk07jo2gaq7bc9pu47ag3.apps.googleusercontent.com';
-const API_KEY = 'AIzaSyBeHW_Izkd7InzeahDl6gGxI5OMyOhiFm8'; // L'API Key est pour les requêtes non-authentifiées ou le 'discovery' des APIs
-const SCOPES = 'https://www.googleapis.com/auth/drive.file'; // Permet d'accéder aux fichiers créés par l'app
+const API_KEY = 'AIzaSyBeHW_Izkd7InzeahDl6gGxI5OMyOhiFm8';
+const SCOPES = 'https://www.googleapis.com/auth/drive.file';
 
-let tokenClient; // Utilisé par Google Identity Services (GIS) pour la connexion
-let accessToken = null; // Le token d'accès obtenu après connexion
+let tokenClient;
+let accessToken = null;
+
+// Ajoutez ces drapeaux pour suivre le chargement des bibliothèques
+let gapiIsReady = false;
+let gisIsReady = false;
+
+// Fonction pour activer le bouton de connexion une fois que les deux bibliothèques sont prêtes
+function enableGoogleLoginButton() {
+    if (gapiIsReady && gisIsReady) {
+        document.getElementById('google-login-btn').disabled = false; // Active le bouton
+        document.getElementById('google-login-btn').textContent = 'Connexion Google'; // Remet le texte original
+        console.log("Les API Google sont prêtes ! Bouton de connexion activé.");
+    }
+}
 
 // Fonction appelée quand la bibliothèque GAPI (Google API Client) est chargée
 function gapiLoaded() {
@@ -123,10 +135,12 @@ function gapiLoaded() {
 // Initialise le client GAPI pour pouvoir faire des requêtes aux APIs (ex: Drive)
 async function initializeGapiClient() {
     await gapi.client.init({
-        apiKey: API_KEY, // API Key pour l'initialisation du client
+        apiKey: API_KEY,
         discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
     });
-    console.log('Google API client chargé.'); // Pour débogage
+    gapiIsReady = true; // Indique que GAPI est prêt
+    enableGoogleLoginButton(); // Tente d'activer le bouton
+    console.log('Google API client chargé.');
 }
 
 // Fonction appelée quand la bibliothèque GIS (Google Identity Services) est chargée
@@ -134,26 +148,19 @@ function gisLoaded() {
     tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
         scope: SCOPES,
-        // Callback exécuté après que l'utilisateur se soit connecté ou ait donné son consentement
         callback: (tokenResponse) => {
             if (tokenResponse.error) {
-                // Gère les erreurs de connexion/consentement
                 alert('Erreur de connexion Google : ' + tokenResponse.error);
                 console.error('Erreur GIS:', tokenResponse.error);
                 return;
             }
-            // Si la connexion réussit, stocke le token d'accès
             accessToken = tokenResponse.access_token;
             document.getElementById('google-user').textContent = "Connecté";
-            console.log('Connecté à Google, token d\'accès obtenu.'); // Pour débogage
-            // Tu peux charger les données utilisateur ici si tu veux, par exemple:
-            // gapi.client.setToken({ access_token: accessToken });
-            // gapi.client.oauth2.userinfo.get().then(response => {
-            //     console.log('User Info:', response.result);
-            //     document.getElementById('google-user').textContent = "Connecté en tant que " + response.result.name;
-            // });
+            console.log('Connecté à Google, token d\'accès obtenu.');
         },
     });
+    gisIsReady = true; // Indique que GIS est prêt
+    enableGoogleLoginButton(); // Tente d'activer le bouton
 }
 
 // Assure que les fonctions sont accessibles globalement par les scripts async (defer)
@@ -162,17 +169,23 @@ window.gisLoaded = gisLoaded;
 
 // Gère le clic sur le bouton de connexion Google
 document.getElementById('google-login-btn').onclick = () => {
-    // Vérifie si le client de token a été initialisé
-    if (!tokenClient) {
+    // Si le bouton est cliquable, cela signifie que tokenClient est prêt
+    if (tokenClient) {
+        tokenClient.requestAccessToken();
+    } else {
+        // Normalement, ce message ne devrait pas s'afficher si le bouton est désactivé par défaut
         alert("La bibliothèque de connexion Google n'est pas encore chargée. Veuillez réessayer dans quelques secondes.");
-        return;
     }
-    // Demande le token d'accès. Cela ouvre la pop-up de connexion/consentement de Google.
-    tokenClient.requestAccessToken();
 };
 
-// --- GESTION DES FICHIERS ET UPLOAD SUR DRIVE ---
+// Désactive le bouton au chargement de la page et indique l'attente
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('google-login-btn').disabled = true;
+    document.getElementById('google-login-btn').textContent = 'Chargement Google Connexion...';
+});
 
+
+// --- Reste de ton code (inchangé par rapport à la version précédente) ---
 // Convertit une dataURL en Blob pour l'upload
 function dataURLtoBlob(dataurl) {
     var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
@@ -183,12 +196,10 @@ function dataURLtoBlob(dataurl) {
 
 // Upload un fichier sur Google Drive
 async function uploadToDrive(fileName, dataURL, fileType) {
-    // Vérifie si l'utilisateur est connecté
     if (!accessToken) {
         alert("Connectez-vous à Google avant d'envoyer sur Drive.");
         return;
     }
-    // Vérifie si l'API Drive est chargée
     if (!gapi.client.drive) {
         alert("L'API Google Drive n'est pas encore chargée. Veuillez patienter ou réessayer.");
         return;
@@ -205,21 +216,19 @@ async function uploadToDrive(fileName, dataURL, fileType) {
     form.append('file', fileBlob);
 
     try {
-        // Envoie la requête à l'API Google Drive via gapi.client
         const res = await gapi.client.request({
             path: 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
             method: 'POST',
             headers: {
-                'Authorization': 'Bearer ' + accessToken, // Utilise le token d'accès pour l'authentification
-                'Content-Type': 'multipart/related' // Important pour les uploads de fichiers
+                'Authorization': 'Bearer ' + accessToken,
+                'Content-Type': 'multipart/related'
             },
-            body: form, // Le corps de la requête est le FormData
+            body: form,
         });
         alert('Fichier envoyé sur Google Drive ! ID: ' + res.result.id);
         console.log('Fichier uploadé:', res.result);
     } catch (err) {
         console.error('Erreur lors de l\'envoi sur Drive:', err);
-        // Affiche un message d'erreur plus détaillé si disponible
         alert('Erreur lors de l\'envoi sur Drive: ' + (err.result && err.result.error ? err.result.error.message : err.message || "Erreur inconnue."));
     }
 }
@@ -323,33 +332,9 @@ document.getElementById('file-upload').addEventListener('change', function(event
     });
 });
 
-// Le chargement initial des fichiers sauvegardés depuis localStorage.
-// Les scripts GAPI et GIS sont déjà chargés dans le <head> avec `async defer`,
-// ce qui est la méthode recommandée. Le bloc ci-dessous n'est donc plus nécessaire
-// car les fonctions `gapiLoaded` et `gisLoaded` seront appelées par les scripts eux-mêmes.
-/*
-window.addEventListener('DOMContentLoaded', () => {
-    // Load Google APIs dynamically (redundant but sure) - C'est redondant avec les scripts dans le head
-    const scriptGapi = document.createElement('script');
-    scriptGapi.src = "https://apis.google.com/js/api.js";
-    scriptGapi.onload = gapiLoaded;
-    document.head.appendChild(scriptGapi);
-
-    const scriptGis = document.createElement('script');
-    scriptGis.src = "https://accounts.google.com/gsi/client";
-    scriptGis.onload = gisLoaded;
-    document.head.appendChild(scriptGis);
-
-    const saved = JSON.parse(localStorage.getItem('fichiers') || '[]');
-    saved.forEach(f => createPreviewBox(f.name, f.data, f.type));
-});
-*/
-
-// On garde le chargement des fichiers sauvegardés mais en dehors du DOMContentLoaded pour éviter la confusion
+// Chargement initial des fichiers sauvegardés depuis localStorage
 const saved = JSON.parse(localStorage.getItem('fichiers') || '[]');
 saved.forEach(f => createPreviewBox(f.name, f.data, f.type));
-
-
 </script>
 <script src="Animation.js"></script>
 </body>
