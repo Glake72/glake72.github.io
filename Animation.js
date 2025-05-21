@@ -1,8 +1,15 @@
+// --- Ton code d'animation existant (si tu en as un) peut être placé ici, au début du fichier.
+// Par exemple :
+// function fondAnime() { /* ... */ }
+// @keyframes fondAnime { /* ... */ }
+// N'oublie pas de laisser l'animation CSS dans le <style> de l'HTML.
+// ---
+
 // --- DÉBUT DU CODE GOOGLE ET GESTION DES FICHIERS ---
 
 const previewContainer = document.getElementById('preview-container');
 
-// REMPLACE TES CLIENT_ID ET API_KEY ICI
+// Tes identifiants Google. Garde-les secrets en production !
 const CLIENT_ID = '716108448607-4d46lrnamcdkk07jo2gaq7bc9pu47ag3.apps.googleusercontent.com';
 const API_KEY = 'AIzaSyBeHW_Izkd7InzeahDl6gGxI5OMyOhiFm8';
 const SCOPES = 'https://www.googleapis.com/auth/drive.file'; // Permet d'accéder aux fichiers créés par l'app
@@ -10,11 +17,13 @@ const SCOPES = 'https://www.googleapis.com/auth/drive.file'; // Permet d'accéde
 let tokenClient; // Utilisé par Google Identity Services (GIS) pour la connexion
 let accessToken = null; // Le token d'accès obtenu après connexion
 
-// Drapeaux pour suivre le chargement des bibliothèques
+// Drapeaux pour suivre le chargement des bibliothèques Google
 let gapiIsReady = false;
 let gisIsReady = false;
 
-// Fonction pour activer le bouton de connexion une fois que les deux bibliothèques sont prêtes
+/**
+ * Active le bouton de connexion Google lorsque les deux bibliothèques (GAPI et GIS) sont chargées.
+ */
 function enableGoogleLoginButton() {
     if (gapiIsReady && gisIsReady) {
         const googleLoginBtn = document.getElementById('google-login-btn');
@@ -22,38 +31,46 @@ function enableGoogleLoginButton() {
             googleLoginBtn.disabled = false;
             googleLoginBtn.textContent = 'Connexion Google';
         }
-        console.log("Les API Google sont prêtes ! Bouton de connexion activé.");
+        console.log("🟢 Les API Google (GAPI et GIS) sont prêtes ! Bouton de connexion activé.");
     }
 }
 
-// Fonction appelée quand la bibliothèque GAPI (Google API Client) est chargée
-// Elle est déclenchée par le script async/defer dans index.html
+/**
+ * Fonction de rappel appelée par le script 'api.js' de Google (GAPI) une fois qu'il est chargé.
+ * Charge le client d'API GAPI.
+ * Cette fonction est rendue globale via `window.gapiLoaded`.
+ */
 function gapiLoaded() {
-    console.log("gapi.js script chargé.");
+    console.log("➡️ gapi.js script chargé. Chargement du client GAPI...");
     gapi.load('client', initializeGapiClient);
 }
 
-// Initialise le client GAPI pour pouvoir faire des requêtes aux APIs (ex: Drive)
+/**
+ * Initialise le client GAPI pour pouvoir faire des requêtes aux APIs (ex: Drive).
+ */
 async function initializeGapiClient() {
-    console.log("Initialisation du client GAPI...");
+    console.log("⚙️ Initialisation du client GAPI...");
     try {
         await gapi.client.init({
             apiKey: API_KEY,
             discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
         });
         gapiIsReady = true;
-        console.log('Client GAPI initialisé. gapiIsReady =', gapiIsReady);
-        enableGoogleLoginButton();
+        console.log('✅ Client GAPI initialisé. gapiIsReady =', gapiIsReady);
+        enableGoogleLoginButton(); // Tente d'activer le bouton si GIS est aussi prêt
     } catch (error) {
-        console.error("Erreur lors de l'initialisation du client GAPI:", error);
-        // Vous pouvez ajouter une alerte à l'utilisateur ici si vous le souhaitez
+        console.error("❌ Erreur lors de l'initialisation du client GAPI:", error);
+        alert("Une erreur est survenue lors de l'initialisation de Google Drive API. Vérifiez la console.");
     }
 }
 
-// Fonction appelée quand la bibliothèque GIS (Google Identity Services) est chargée
-// Elle est déclenchée par le script async/defer dans index.html
+/**
+ * Fonction de rappel appelée par le script 'gsi/client.js' de Google (GIS) une fois qu'il est chargé.
+ * Initialise le client de jeton pour l'authentification.
+ * Cette fonction est rendue globale via `window.gisLoaded`.
+ */
 function gisLoaded() {
-    console.log("gsi/client.js script chargé.");
+    console.log("➡️ gsi/client.js script chargé. Initialisation du client de jeton GIS...");
     tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
         scope: SCOPES,
@@ -61,7 +78,7 @@ function gisLoaded() {
         callback: (tokenResponse) => {
             if (tokenResponse.error) {
                 alert('Erreur de connexion Google : ' + tokenResponse.error);
-                console.error('Erreur GIS:', tokenResponse.error);
+                console.error('❌ Erreur GIS:', tokenResponse.error);
                 return;
             }
             // Si la connexion réussit, stocke le token d'accès
@@ -70,33 +87,34 @@ function gisLoaded() {
             if (googleUserSpan) {
                 googleUserSpan.textContent = "Connecté";
             }
-            console.log('Connecté à Google, token d\'accès obtenu.');
+            console.log('✅ Connecté à Google, token d\'accès obtenu.');
         },
     });
     gisIsReady = true;
-    console.log('Client de jeton GIS initialisé. gisIsReady =', gisIsReady);
-    enableGoogleLoginButton();
+    console.log('✅ Client de jeton GIS initialisé. gisIsReady =', gisIsReady);
+    enableGoogleLoginButton(); // Tente d'activer le bouton si GAPI est aussi prêt
 }
 
-// Assure que les fonctions sont accessibles globalement par les scripts async (defer)
-// C'est essentiel pour que les scripts Google puissent les appeler
+// Rend les fonctions gapiLoaded et gisLoaded accessibles globalement.
+// C'est CRUCIAL pour que les scripts Google les trouvent et les appellent automatiquement.
 window.gapiLoaded = gapiLoaded;
 window.gisLoaded = gisLoaded;
 
 // Cet événement est déclenché lorsque le DOM est entièrement chargé
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOMContentLoaded déclenché. Initialisation du bouton et des gestionnaires de fichiers.");
+    console.log("🔵 DOMContentLoaded déclenché. Initialisation des éléments de l'interface.");
 
     const googleLoginBtn = document.getElementById('google-login-btn');
     if (googleLoginBtn) {
         googleLoginBtn.disabled = true; // Désactive le bouton initialement
         googleLoginBtn.textContent = 'Chargement Google Connexion...'; // Message d'attente
+        // Attache le gestionnaire de clic après que le bouton a été trouvé
         googleLoginBtn.onclick = () => {
             // Le clic n'est possible que si le bouton est activé par enableGoogleLoginButton()
             if (tokenClient) {
                 tokenClient.requestAccessToken();
             } else {
-                alert("La bibliothèque de connexion Google n'est pas encore chargée. Veuillez réessayer dans quelques secondes.");
+                alert("La bibliothèque de connexion Google n'est pas encore chargée. Veuillez patienter.");
             }
         };
     }
@@ -126,7 +144,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// Convertit une dataURL en Blob pour l'upload
+/**
+ * Convertit une Data URL en objet Blob.
+ * @param {string} dataurl - La Data URL à convertir.
+ * @returns {Blob} L'objet Blob représentant les données.
+ */
 function dataURLtoBlob(dataurl) {
     var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
         bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
@@ -134,7 +156,12 @@ function dataURLtoBlob(dataurl) {
     return new Blob([u8arr], {type:mime});
 }
 
-// Upload un fichier sur Google Drive
+/**
+ * Upload un fichier sur Google Drive.
+ * @param {string} fileName - Nom du fichier.
+ * @param {string} dataURL - Data URL du fichier.
+ * @param {string} fileType - Type MIME du fichier.
+ */
 async function uploadToDrive(fileName, dataURL, fileType) {
     if (!accessToken) {
         alert("Connectez-vous à Google avant d'envoyer sur Drive.");
@@ -168,12 +195,17 @@ async function uploadToDrive(fileName, dataURL, fileType) {
         alert('Fichier envoyé sur Google Drive ! ID: ' + res.result.id);
         console.log('Fichier uploadé:', res.result);
     } catch (err) {
-        console.error('Erreur lors de l\'envoi sur Drive:', err);
+        console.error('❌ Erreur lors de l\'envoi sur Drive:', err);
         alert('Erreur lors de l\'envoi sur Drive: ' + (err.result && err.result.error ? err.result.error.message : err.message || "Erreur inconnue."));
     }
 }
 
-// Crée la boîte de prévisualisation pour un fichier
+/**
+ * Crée et ajoute une boîte de prévisualisation pour un fichier.
+ * @param {string} fileName - Nom du fichier.
+ * @param {string} dataURL - Data URL du fichier.
+ * @param {string} fileType - Type MIME du fichier.
+ */
 function createPreviewBox(fileName, dataURL, fileType) {
     const previewBox = document.createElement('div');
     previewBox.style.border = '2px solid #00ff15';
@@ -198,6 +230,7 @@ function createPreviewBox(fileName, dataURL, fileType) {
     }
     previewBox.appendChild(content);
 
+    // Télécharger bouton
     const downloadBtn = document.createElement('a');
     downloadBtn.textContent = 'Télécharger';
     downloadBtn.href = dataURL;
@@ -214,6 +247,7 @@ function createPreviewBox(fileName, dataURL, fileType) {
     downloadBtn.style.cursor = 'pointer';
     previewBox.appendChild(downloadBtn);
 
+    // Enregistrer sur Drive bouton
     const driveBtn = document.createElement('button');
     driveBtn.textContent = 'Enregistrer sur Drive';
     driveBtn.style.position = 'absolute';
@@ -230,6 +264,7 @@ function createPreviewBox(fileName, dataURL, fileType) {
     };
     previewBox.appendChild(driveBtn);
 
+    // Supprimer bouton
     const removeBtn = document.createElement('button');
     removeBtn.textContent = 'Supprimer';
     removeBtn.style.position = 'absolute';
