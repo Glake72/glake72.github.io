@@ -1,112 +1,311 @@
- lang="fr">
+<!DOCTYPE html>
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page web</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        body {
-            background-color: white;
-            color: #000;
-        }
-    animation: fondAnime 10s ease-in-out infinite;
-}
-        .roman {
-            text-align: center;
-            border-radius: 30px;
-            margin: 20px auto;
-            max-width: 500px;
-            background: #b8daf9;
-            font-weight: bold;
-            font-size: 0.7em;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-        }
-        .contenu {
-            flex: 1;
-            padding: 30px;
-        }
-        h1, h2 {
-            text-align: center;
-            border: 2px solid #00ff1a;
-            border-radius: 30px;
-            padding: 10px;
-            margin: 20px auto;
-            max-width: 600px;
-        }
-        .banniere-bas {
-            width: 100%;
-            background: #00ff15;
-            color: rgb(197, 6, 6);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 15px 0;
-            position: fixed;
-            left: 0;
-            bottom: 0;
-        }
-        .banniere-bas button {
-            background: #00ff15;
-            color: #000000;
-            border: none;
-            border-radius: 20px;
-            margin: 0 10px;
-            padding: 10px 20px;
-            font-size: 1em;
-            cursor: pointer;
-            transition: background 0.2, color 0.2s;
-        }
-        .banniere-bas button:hover {
-            background: #000000;
-            color: rgb(255, 255, 255);
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Page web</title>
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        color: #000;
+        animation: fondAnime 10s ease-in-out infinite;
     }
-    </style>
+    .roman {
+        text-align: center;
+        border-radius: 30px;
+        margin: 20px auto;
+        max-width: 500px;
+        background: #b8daf9;
+        font-weight: bold;
+        font-size: 0.7em;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .contenu {
+        flex: 1;
+        padding: 30px;
+    }
+    h1, h2 {
+        text-align: center;
+        border: 2px solid #00ff1a;
+        border-radius: 30px;
+        padding: 10px;
+        margin: 20px auto;
+        max-width: 600px;
+    }
+    .banniere-bas {
+        width: 100%;
+        background: #00ff15;
+        color: rgb(197, 6, 6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 15px 0;
+        position: fixed;
+        left: 0;
+        bottom: 0;
+    }
+    .banniere-bas button {
+        background: #00ff15;
+        color: #000000;
+        border: none;
+        border-radius: 20px;
+        margin: 0 10px;
+        padding: 10px 20px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s;
+    }
+    .banniere-bas button:hover {
+        background: #000000;
+        color: rgb(255, 255, 255);
+    }
+</style>
 
+<!-- Google Identity Services -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
+<!-- Google API Client -->
 <script src="https://apis.google.com/js/api.js" async defer></script>
-
-<script src="Animation.js"></script>
 </head>
 <body>
 <div class="contenu">
-    <h1>Mon site</h1>
-    <div class="roman">
-        <h2>Fait par Roman SOUCY</h2>
-    </div>
-    <p style="text-align: center; max-width: 700px; margin: 30px auto;">
-        Bienvenue sur cette page d'exemple réalisée en HTML, CSS et JAVASCRIPT. Vous pouvez y retrouver un moyen de sauvegarde de fichier(limité a 5 MO), des liens utiles, et une bannière en bas de page pour accéder rapidement aux sites web importants.
-    </p>
+    <h1>Mon site</h1>
+    <div class="roman">
+        <h2>Fait par Roman SOUCY</h2>
+    </div>
+    <p style="text-align: center; max-width: 700px; margin: 30px auto;">
+        Bienvenue sur cette page d'exemple réalisée en HTML, CSS et JAVASCRIPT. Vous pouvez y retrouver un moyen de sauvegarde de fichier(limité a 5 MO), des liens utiles, et une bannière en bas de page pour accéder rapidement aux sites web importants.
+    </p>
 
-    <div class="banniere-bas">
-        <button onclick="window.location.href='mailto:roman.soucy@collegedesmuriers.fr'">Contacts</button>
-        <button onclick="alert('Support non disponible pour le moment. Encore en dévelopement 😅 ')">Support</button>
-        <button onclick="window.location.href='https://www.ecoledirecte.com/login?cameFrom=%2FAccueil'">Ecole Direct</button>
-        <button onclick="window.location.href='https://www.google.com'">Google</button>
-        <button onclick="window.location.href='https://www.lri.fr/~jacquot/progWeb/cours4/cours4.pdf'">Informations</button>
-    </div>
+    <div class="banniere-bas">
+        <button onclick="window.location.href='mailto:roman.soucy@collegedesmuriers.fr'">Contacts</button>
+        <button onclick="alert('Support non disponible pour le moment. Encore en dévelopement 😅 ')">Support</button>
+        <button onclick="window.location.href='https://www.ecoledirecte.com/login?cameFrom=%2FAccueil'">Ecole Direct</button>
+        <button onclick="window.location.href='https://www.google.com'">Google</button>
+        <button onclick="window.location.href='https://www.lri.fr/~jacquot/progWeb/cours4/cours4.pdf'">Informations</button>
+    </div>
 
-    <div class="bouton-ajout-image" style="text-align:center; margin: 30px 0;">
-        <label for="file-upload" style="display:inline-block; background:#00ff15; color:#000; border-radius:20px; padding:10px 20px; cursor:pointer; font-size:1em;">
-            Importer un fichier
-            <input id="file-upload" type="file" multiple style="display:none;">
-        </label>
-    </div>
-    <div id="preview-container" style="display:flex; flex-wrap:wrap; gap:16px; justify-content:center; margin-bottom:40px;"></div>
+    <div class="bouton-ajout-image" style="text-align:center; margin: 30px 0;">
+        <label for="file-upload" style="display:inline-block; background:#00ff15; color:#000; border-radius:20px; padding:10px 20px; cursor:pointer; font-size:1em;">
+            Importer un fichier
+            <input id="file-upload" type="file" multiple style="display:none;">
+        </label>
+    </div>
+    <div id="preview-container" style="display:flex; flex-wrap:wrap; gap:16px; justify-content:center; margin-bottom:40px;"></div>
 
-    <div style="text-align:center; margin:20px;">
-        <button id="google-login-btn" style="background:#4285F4;color:#fff;border:none;border-radius:20px;padding:10px 20px;cursor:pointer;font-size:1em;">
-            Connexion Google
-        </button>
-        <span id="google-user" style="margin-left:10px;"></span>
-    </div>
+    <div style="text-align:center; margin:20px;">
+        <button id="google-login-btn" style="background:#4285F4;color:#fff;border:none;border-radius:20px;padding:10px 20px;cursor:pointer;font-size:1em;">
+            Connexion Google
+        </button>
+        <span id="google-user" style="margin-left:10px;"></span>
+    </div>
 </div>
+
+<script>
+const previewContainer = document.getElementById('preview-container');
+
+const CLIENT_ID = '716108448607-4d46lrnamcdkk07jo2gaq7bc9pu47ag3.apps.googleusercontent.com';
+const API_KEY = 'AIzaSyBeHW_Izkd7InzeahDl6gGxI5OMyOhiFm8';
+const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+
+let tokenClient;
+let gapiInited = false;
+let gisInited = false;
+let accessToken = null;
+
+function gapiLoaded() {
+    gapi.load('client', initializeGapiClient);
+}
+async function initializeGapiClient() {
+    await gapi.client.init({
+        apiKey: API_KEY,
+        discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
+    });
+    gapiInited = true;
+}
+function gisLoaded() {
+    tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: SCOPES,
+        callback: (tokenResponse) => {
+            if (tokenResponse.error) {
+                alert('Erreur de connexion Google : ' + tokenResponse.error);
+                return;
+            }
+            accessToken = tokenResponse.access_token;
+            document.getElementById('google-user').textContent = "Connecté";
+        },
+    });
+    gisInited = true;
+}
+
+window.gapiLoaded = gapiLoaded;
+window.gisLoaded = gisLoaded;
+
+document.getElementById('google-login-btn').onclick = () => {
+    if (!gapiInited || !gisInited) {
+        alert("Google API non chargée, réessayez dans quelques secondes.");
+        return;
+    }
+    tokenClient.requestAccessToken();
+};
+
+// Load saved files from localStorage
+window.addEventListener('DOMContentLoaded', () => {
+    // Load Google APIs dynamically (redundant but sure)
+    const scriptGapi = document.createElement('script');
+    scriptGapi.src = "https://apis.google.com/js/api.js";
+    scriptGapi.onload = gapiLoaded;
+    document.head.appendChild(scriptGapi);
+
+    const scriptGis = document.createElement('script');
+    scriptGis.src = "https://accounts.google.com/gsi/client";
+    scriptGis.onload = gisLoaded;
+    document.head.appendChild(scriptGis);
+
+    const saved = JSON.parse(localStorage.getItem('fichiers') || '[]');
+    saved.forEach(f => createPreviewBox(f.name, f.data, f.type));
+});
+
+// Convert dataURL to Blob for upload
+function dataURLtoBlob(dataurl) {
+    var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while(n--) u8arr[n] = bstr.charCodeAt(n);
+    return new Blob([u8arr], {type:mime});
+}
+
+// Upload file to Google Drive
+async function uploadToDrive(fileName, dataURL, fileType) {
+    if (!accessToken) {
+        alert("Connectez-vous à Google avant d'envoyer sur Drive.");
+        return;
+    }
+    const fileBlob = dataURLtoBlob(dataURL);
+    const metadata = {
+        name: fileName,
+        mimeType: fileType
+    };
+    const form = new FormData();
+    form.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
+    form.append('file', fileBlob);
+
+    const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
+        method: 'POST',
+        headers: new Headers({ 'Authorization': 'Bearer ' + accessToken }),
+        body: form,
+    });
+    if (res.ok) {
+        alert('Fichier envoyé sur Google Drive !');
+    } else {
+        alert('Erreur lors de l\'envoi sur Drive');
+    }
+}
+
+// Create preview box for a file
+function createPreviewBox(fileName, dataURL, fileType) {
+    const previewBox = document.createElement('div');
+    previewBox.style.border = '2px solid #00ff15';
+    previewBox.style.borderRadius = '15px';
+    previewBox.style.padding = '10px';
+    previewBox.style.background = '#f0f0f0';
+    previewBox.style.position = 'relative';
+    previewBox.style.width = '150px';
+    previewBox.style.textAlign = 'center';
+
+    let content;
+    if (fileType.startsWith('image/')) {
+        content = document.createElement('img');
+        content.src = dataURL;
+        content.style.maxWidth = '100%';
+        content.style.maxHeight = '100px';
+        content.alt = fileName;
+    } else {
+        content = document.createElement('div');
+        content.textContent = fileName;
+        content.style.margin = '20px 0';
+    }
+    previewBox.appendChild(content);
+
+    // Télécharger bouton
+    const downloadBtn = document.createElement('a');
+    downloadBtn.textContent = 'Télécharger';
+    downloadBtn.href = dataURL;
+    downloadBtn.download = fileName;
+    downloadBtn.style.position = 'absolute';
+    downloadBtn.style.left = '5px';
+    downloadBtn.style.top = '5px';
+    downloadBtn.style.background = '#00ff15';
+    downloadBtn.style.color = '#000';
+    downloadBtn.style.border = 'none';
+    downloadBtn.style.borderRadius = '10px';
+    downloadBtn.style.padding = '5px 10px';
+    downloadBtn.style.textDecoration = 'none';
+    downloadBtn.style.cursor = 'pointer';
+    previewBox.appendChild(downloadBtn);
+
+    // Enregistrer sur Drive bouton
+    const driveBtn = document.createElement('button');
+    driveBtn.textContent = 'Enregistrer sur Drive';
+    driveBtn.style.position = 'absolute';
+    driveBtn.style.top = '35px';
+    driveBtn.style.left = '5px';
+    driveBtn.style.background = '#4285F4';
+    driveBtn.style.color = '#fff';
+    driveBtn.style.border = 'none';
+    driveBtn.style.borderRadius = '10px';
+    driveBtn.style.padding = '5px 10px';
+    driveBtn.style.cursor = 'pointer';
+    driveBtn.onclick = function() {
+        uploadToDrive(fileName, dataURL, fileType);
+    };
+    previewBox.appendChild(driveBtn);
+
+    // Supprimer bouton
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = 'Supprimer';
+    removeBtn.style.position = 'absolute';
+    removeBtn.style.top = '90px';
+    removeBtn.style.right = '5px';
+    removeBtn.style.background = '#ff4d4d';
+    removeBtn.style.color = '#fff';
+    removeBtn.style.border = 'none';
+    removeBtn.style.borderRadius = '10px';
+    removeBtn.style.padding = '5px 10px';
+    removeBtn.style.cursor = 'pointer';
+    removeBtn.onclick = function() {
+        previewBox.remove();
+        // Supprimer du localStorage
+        let saved = JSON.parse(localStorage.getItem('fichiers') || '[]');
+        saved = saved.filter(f => f.name !== fileName);
+        localStorage.setItem('fichiers', JSON.stringify(saved));
+    };
+    previewBox.appendChild(removeBtn);
+
+    previewContainer.appendChild(previewBox);
+}
+
+// Ajouter et sauvegarder fichiers depuis l'input
+document.getElementById('file-upload').addEventListener('change', function(event) {
+    const files = Array.from(event.target.files);
+    let saved = JSON.parse(localStorage.getItem('fichiers') || '[]');
+
+    files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            createPreviewBox(file.name, e.target.result, file.type);
+            saved.push({ name: file.name, data: e.target.result, type: file.type });
+            localStorage.setItem('fichiers', JSON.stringify(saved));
+        };
+        reader.readAsDataURL(file);
+    });
+});
+</script>
+<script src="Animation.js"></script>
 </body>
 </html>
