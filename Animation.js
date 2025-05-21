@@ -183,15 +183,16 @@ async function uploadToDrive(fileName, dataURL, fileType) {
     form.append('file', fileBlob);
 
     try {
-        const res = await gapi.client.request({
-            path: 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + accessToken,
-                'Content-Type': 'multipart/related'
-            },
-            body: form,
-        });
+        const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
+    method: 'POST',
+    headers: {
+        'Authorization': 'Bearer ' + accessToken
+    },
+    body: form
+});
+const result = await response.json();
+alert('Fichier envoyé sur Google Drive ! ID: ' + result.id);
+console.log('Fichier uploadé:', result);
         alert('Fichier envoyé sur Google Drive ! ID: ' + res.result.id);
         console.log('Fichier uploadé:', res.result);
     } catch (err) {
