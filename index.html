@@ -1,515 +1,1209 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Page web</title>
-
-    <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
-    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Tableau de Bord Personnel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Définition des keyframes pour l'animation de fond */
-        @keyframes fondAnime {
-            0% { background-color: #ffffff; } /* Blanc */
-            25% { background-color: #f0f8ff; } /* AliceBlue */
-            50% { background-color: #e6e6fa; } /* Lavender */
-            75% { background-color: #f0f0f0; } /* Gris clair */
-            100% { background-color: #ffffff; } /* Retour au blanc */
-        }
-
+        /* Styles généraux */
         body {
+            font-family: 'Inter', sans-serif;
             margin: 0;
-            font-family: Arial, sans-serif;
-            min-height: 100vh;
+            padding: 0;
+            background-color: #f0f2f5; /* Couleur de fond légère */
+            color: #333;
             display: flex;
             flex-direction: column;
-            background-color: white;
-            color: #000;
-            animation: fondAnime 10s ease-in-out infinite; /* Application de l'animation */
+            min-height: 100vh;
+            overflow-x: hidden; /* Empêche le défilement horizontal */
         }
-        .roman {
-            text-align: center;
-            border-radius: 30px;
-            margin: 20px auto;
-            max-width: 500px;
-            background: #b8daf9;
-            font-weight: bold;
-            font-size: 0.7em;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-        }
-        .contenu {
-            flex: 1;
-            padding: 30px;
-            padding-bottom: 80px; /* Espace pour la bannière fixe du bas */
-        }
-        h1, h2 {
-            text-align: center;
-            border: 2px solid #00ff1a;
-            border-radius: 30px;
-            padding: 10px;
-            margin: 20px auto;
-            max-width: 600px;
-        }
-        .banniere-bas {
-            width: 100%;
-            background: #00ff15; /* Couleur de fond de la bannière */
-            color: rgb(197, 6, 6); /* Couleur du texte principal, à revoir pour le contraste */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 15px 0;
-            position: fixed; /* Rendre la bannière fixe en bas */
+
+        /* Animation de fond */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
             left: 0;
-            bottom: 0;
-            box-shadow: 0 -2px 8px rgba(0,0,0,0.07); /* Ombre légère pour la bannière */
-            z-index: 1000; /* Assure que la bannière est au-dessus des autres éléments */
-            flex-wrap: wrap; /* Permet aux boutons de passer à la ligne sur petits écrans */
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%); /* Dégradé bleu-violet */
+            animation: backgroundAnimation 20s infinite alternate;
+            z-index: -1; /* Place l'animation en arrière-plan */
+            opacity: 0.7; /* Légère transparence */
         }
-        .banniere-bas button {
-            background: #00ff15; /* Boutons avec le même fond que la bannière */
-            color: #000000; /* Texte noir sur les boutons */
-            border: none;
-            border-radius: 20px;
-            margin: 0 10px;
-            padding: 10px 20px;
-            font-size: 1em;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s;
-            white-space: nowrap; /* Empêche les boutons de passer à la ligne */
+
+        @keyframes backgroundAnimation {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
         }
-        .banniere-bas button:hover {
-            background: #000000; /* Fond noir au survol */
-            color: rgb(255, 255, 255); /* Texte blanc au survol */
-        }
-        /* Style pour les messages d'erreur/succès */
-        #message-display {
+
+        /* En-tête */
+        header {
+            background-color: #2c3e50; /* Bleu foncé */
+            color: white;
+            padding: 15px 20px;
             text-align: center;
-            margin: 20px auto;
-            max-width: 600px;
-            padding: 10px;
-            border-radius: 5px;
-            font-weight: bold;
-            display: none; /* Caché par défaut */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 10;
         }
-        #message-display.success {
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2em;
+            letter-spacing: 1px;
+        }
+
+        /* Conteneur principal */
+        .container {
+            display: flex;
+            flex-wrap: wrap; /* Permet aux colonnes de s'enrouler sur les petits écrans */
+            gap: 25px; /* Espace entre les sections */
+            padding: 25px;
+            max-width: 1200px;
+            margin: 25px auto; /* Centre le conteneur et ajoute des marges */
+            flex-grow: 1; /* Permet au conteneur de prendre l'espace disponible */
+        }
+
+        /* Styles des sections */
+        .section {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 25px;
+            flex: 1; /* Chaque section prend une part égale de l'espace */
+            min-width: 300px; /* Largeur minimale pour éviter un rétrécissement excessif */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section h2 {
+            color: #34495e; /* Bleu-gris foncé */
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+
+        /* Styles des boutons */
+        button {
+            background-color: #3498db; /* Bleu vif */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background-color: #bdc3c7; /* Gris clair */
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Messages d'information/erreur */
+        .message {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            display: none; /* Caché par défaut */
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .message.success {
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
-        #message-display.error {
+
+        .message.error {
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-        #message-display.info { /* Nouveau style pour les messages d'information */
-            background-color: #e2e3e5;
-            color: #383d41;
-            border: 1px solid #d6d8db;
+
+        .message.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
         }
-        #google-user {
-            margin-left: 10px;
-            font-weight: bold;
-            color: #000; /* Assure une bonne visibilité du texte de statut */
-        }
-        /* Styles pour les boutons dans la previewBox, pour améliorer leur positionnement */
-        .preview-box {
-            border: 2px solid #00ff15;
-            border-radius: 15px;
-            padding: 10px;
-            background: #f0f0f0;
-            position: relative;
-            width: 180px; /* Légèrement plus large pour les boutons */
+
+        /* Section Google Drive */
+        #google-auth-section {
             text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 120px; /* Espace pour les boutons en haut */
-            word-wrap: break-word; /* Important pour les noms de fichiers longs */
-        }
-        .preview-box img {
-            max-width: 100%;
-            max-height: 100px;
-            display: block; /* Supprime l'espace sous l'image */
-            margin: 0 auto 10px; /* Centre l'image et ajoute une marge en bas */
-        }
-        .preview-box .file-name {
-            margin: 10px 0;
-            font-size: 0.9em; /* Légèrement plus petit pour les noms de fichiers */
-        }
-        .preview-buttons-container {
-            display: flex;
-            flex-direction: column; /* Empile les boutons verticalement */
-            gap: 5px; /* Espacement entre les boutons */
-            position: absolute; /* Positionnement absolu pour les boutons */
-            top: 5px; /* Aligné en haut */
-            left: 5px; /* Aligné à gauche */
-            width: calc(100% - 10px); /* Prend toute la largeur de la previewBox moins le padding */
-        }
-        .preview-buttons-container button,
-        .preview-buttons-container a {
-            position: static !important; /* Rend les boutons statiques dans leur conteneur flex */
-            margin: 0; /* Supprime les marges externes */
-            padding: 5px 10px;
-            font-size: 0.8em; /* Taille de police légèrement plus petite */
-            width: 100%; /* Les boutons prennent toute la largeur du conteneur */
-            box-sizing: border-box; /* Inclut padding et border dans la largeur */
-        }
-        .preview-buttons-container .remove-btn { /* Style spécifique pour le bouton supprimer */
-            background: #ff4d4d;
-            color: #fff;
-            position: absolute; /* Place le bouton supprimer en bas à droite */
-            bottom: 5px;
-            right: 5px;
-            left: auto; /* Annule le left: 5px; */
-            width: auto; /* Laisse le bouton reprendre sa largeur naturelle */
-        }
-        .preview-buttons-container .download-btn { /* Style spécifique pour le bouton télécharger */
-            position: static !important;
-            border-radius: 15px;
-        }
-        .preview-buttons-container .drive-btn { /* Style spécifique pour le bouton Drive */
-            position: static !important;
-        }
-
-        /* Nouveau style pour les fichiers venant de Google Drive */
-        .drive-item-box { /* Renommé de .drive-file-box pour inclure les dossiers */
-            border: 2px solid #4285F4; /* Bordure bleue Google */
-            border-radius: 15px;
-            padding: 10px;
-            background: #e6f0ff; /* Fond bleu clair */
-            position: relative;
-            width: 180px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between; /* Pour pousser le bouton delete en bas */
-            padding-bottom: 50px; /* Espace pour le bouton supprimer */
-            word-wrap: break-word;
-            cursor: pointer; /* Indique que c'est cliquable */
-        }
-        .drive-item-box:hover {
-            background-color: #d0e7ff; /* Légèrement plus foncé au survol */
-        }
-        .drive-item-box.folder {
-            border-color: #fbc02d; /* Couleur dossier jaune */
-            background-color: #fffde7; /* Fond jaune clair */
-        }
-        .drive-item-box.folder:hover {
-            background-color: #fff9c4;
-        }
-        .drive-item-box .file-name {
-            margin: 10px 0;
-            font-weight: bold;
-        }
-        .drive-item-box .item-type { /* Renommé de .mime-type */
-            font-size: 0.8em;
-            color: #666;
-            margin-bottom: 10px;
-        }
-        .drive-item-box .delete-drive-btn {
-            background: #d9534f; /* Rouge pour supprimer */
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            padding: 5px 10px;
-            cursor: pointer;
-            position: absolute;
-            bottom: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 20px); /* Presque toute la largeur */
-        }
-        .drive-item-box .delete-drive-btn:hover {
-            background: #c9302c;
-        }
-
-        #drive-path {
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #333;
-        }
-        #drive-path a {
-            color: #4285F4;
-            text-decoration: none;
-        }
-        #drive-path a:hover {
-            text-decoration: underline;
-        }
-
-        /* NOUVEAUX STYLES POUR LA SECTION NOTES */
-        #main-content-wrapper {
-            display: flex; /* Utilise flexbox pour aligner le contenu principal */
-            justify-content: center; /* Centre le contenu horizontalement */
-            gap: 30px; /* Espacement entre les colonnes */
-            margin: 30px auto;
-            max-width: 1200px; /* Largeur maximale pour le contenu */
-            flex-wrap: wrap; /* Permet aux colonnes de passer à la ligne sur petits écrans */
-        }
-
-        #file-upload-section,
-        #drive-section,
-        #notes-section {
-            flex: 1; /* Permet aux sections de prendre de l'espace */
-            min-width: 300px; /* Largeur minimale pour éviter le rétrécissement excessif */
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        #file-upload-section {
-            order: 2; /* Ordre visuel */
-        }
-        #drive-section {
-            order: 3; /* Ordre visuel */
-        }
-        #notes-section {
-            order: 1; /* Place la section notes en première position (à gauche) */
-            background-color: #ffe; /* Couleur légèrement différente pour les notes */
-            border: 2px solid #ffc107; /* Bordure jaune */
-            display: flex;
-            flex-direction: column;
-        }
-
-        #notes-section h3 {
-            text-align: center;
-            margin-top: 0;
-            color: #333;
-        }
-
-        #notes-input {
-            width: calc(100% - 20px); /* Prend presque toute la largeur */
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box; /* Inclut padding et border dans la largeur */
-            font-size: 1em;
-            resize: vertical; /* Permet de redimensionner la hauteur */
-        }
-
-        #add-note-btn {
-            background: #28a745; /* Vert pour ajouter */
-            color: #fff;
-            border: none;
-            border-radius: 20px;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 1em;
             margin-bottom: 20px;
-            display: block; /* Pour centrer si besoin */
-            width: fit-content;
-            margin: 0 auto 20px auto; /* Centre le bouton */
-        }
-        #add-note-btn:hover {
-            background: #218838;
         }
 
-        #notes-container {
-            display: flex;
-            flex-direction: column; /* Empile les notes verticalement */
-            gap: 10px;
-            flex-grow: 1; /* Permet au conteneur de prendre l'espace restant */
+        #google-auth-section p {
+            font-size: 1.1em;
+            margin-bottom: 15px;
         }
 
-        .note-item {
-            background-color: #fffacd; /* Jaune clair pour les notes */
-            border: 1px solid #ffeb3b;
+        #drive-files-container {
+            border: 1px solid #eee;
             border-radius: 8px;
             padding: 15px;
-            position: relative;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            word-wrap: break-word; /* Important pour les textes longs */
+            min-height: 150px;
+            max-height: 400px; /* Limite la hauteur pour le défilement */
+            overflow-y: auto; /* Ajoute une barre de défilement si nécessaire */
+            background-color: #fdfdfd;
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-content: flex-start; /* Aligne les éléments en haut */
         }
 
-        .note-item .delete-note-btn {
-            background: #dc3545; /* Rouge pour supprimer */
-            color: #fff;
+        .drive-item-box {
+            display: flex;
+            align-items: center;
+            background-color: #e9f5fe; /* Fond léger pour les éléments Drive */
+            border: 1px solid #cce7ff;
+            border-radius: 6px;
+            padding: 8px 12px;
+            width: calc(50% - 10px); /* Deux colonnes sur desktop, avec un peu d'espace */
+            box-sizing: border-box;
+            transition: background-color 0.2s ease;
+            cursor: default; /* Curseur par défaut pour les fichiers */
+        }
+
+        .drive-item-box.folder {
+            cursor: pointer; /* Curseur main pour les dossiers */
+            background-color: #dceefc; /* Couleur différente pour les dossiers */
+        }
+
+        .drive-item-box:hover {
+            background-color: #d0e7fb;
+        }
+
+        .drive-icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        .item-name {
+            flex-grow: 1; /* Prend l'espace restant */
+            font-weight: 600;
+            white-space: nowrap; /* Empêche le retour à la ligne */
+            overflow: hidden; /* Cache le texte qui dépasse */
+            text-overflow: ellipsis; /* Ajoute des points de suspension */
+        }
+
+        .drive-item-buttons {
+            display: flex;
+            gap: 5px; /* Espace entre les boutons */
+            margin-left: auto; /* Pousse les boutons à droite */
+        }
+
+        .delete-drive-btn, .download-drive-btn {
+            background-color: #dc3545; /* Rouge pour supprimer */
+            color: white;
             border: none;
             border-radius: 5px;
             padding: 5px 10px;
             cursor: pointer;
             font-size: 0.8em;
-            position: absolute;
-            top: 5px;
-            right: 5px;
+            transition: background-color 0.3s ease;
+            margin-top: 0; /* Annule la marge du bouton général */
+            box-shadow: none; /* Annule l'ombre du bouton général */
         }
-        .note-item .delete-note-btn:hover {
-            background: #c82333;
+        .download-drive-btn {
+            background-color: #007bff; /* Bleu pour télécharger */
         }
-        /* ... (ton CSS existant, sans changement) ... */
 
-/* NOUVEAUX STYLES POUR LA STRUCTURE DES COLONNES */
-#main-content-wrapper {
-    display: flex; /* Utilise flexbox pour aligner le contenu principal */
-    justify-content: center; /* Centre le contenu horizontalement */
-    gap: 30px; /* Espacement entre les colonnes */
-    margin: 30px auto;
-    max-width: 1200px; /* Largeur maximale pour le contenu */
-    flex-wrap: wrap; /* Permet aux colonnes de passer à la ligne sur petits écrans */
-}
+        .delete-drive-btn:hover { background-color: #c82333; }
+        .download-drive-btn:hover { background-color: #0056b3; }
 
-#file-upload-section,
-#drive-section,
-#notes-section {
-    flex: 1; /* Permet aux sections de prendre de l'espace égal */
-    min-width: 300px; /* Largeur minimale pour éviter le rétrécissement excessif sur petits écrans */
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
 
-#file-upload-section {
-    order: 2; /* Place la section d'upload au milieu */
-}
-#drive-section {
-    order: 3; /* Place la section Drive à droite */
-}
-#notes-section {
-    order: 1; /* Place la section notes en première position (à gauche) */
-    background-color: #fff; /* Fond légèrement différent pour les notes */
-    border: 2px solid #ffc107; /* Bordure jaune pour les notes */
-    display: flex; /* Utilise flexbox pour son contenu interne */
-    flex-direction: column; /* Empile les éléments verticalement */
-}
+        #drive-path {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: #555;
+            display: flex;
+            flex-wrap: wrap; /* Permet au chemin de s'enrouler */
+        }
 
-#notes-section h3 {
-    text-align: center;
-    margin-top: 0;
-    color: #333;
-}
+        .path-segment {
+            cursor: pointer;
+            font-weight: bold;
+            color: #3498db;
+        }
 
-#notes-input {
-    width: calc(100% - 20px); /* Prend presque toute la largeur avec padding */
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-sizing: border-box; /* Inclut padding et border dans la largeur */
-    font-size: 1em;
-    resize: vertical; /* Permet à l'utilisateur de redimensionner la hauteur de la zone de texte */
-}
+        .path-segment:hover {
+            text-decoration: underline;
+        }
 
-#add-note-btn {
-    background: #28a745; /* Vert pour ajouter */
-    color: #fff;
-    border: none;
-    border-radius: 20px;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 1em;
-    margin-bottom: 20px;
-    display: block; /* Pour centrer le bouton */
-    width: fit-content; /* S'adapte au contenu du texte */
-    margin: 0 auto 20px auto; /* Centre le bouton */
-}
-#add-note-btn:hover {
-    background: #218838;
-}
+        .path-separator {
+            margin: 0 5px;
+            color: #888;
+        }
 
-#notes-container {
-    display: flex;
-    flex-direction: column; /* Empile les notes verticalement */
-    gap: 10px; /* Espacement entre les notes */
-    flex-grow: 1; /* Permet au conteneur de notes de prendre l'espace restant */
-}
+        .drive-action-btn {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
 
-.note-item {
-    background-color: #fffacd; /* Jaune clair pour les notes */
-    border: 1px solid #ffeb3b;
-    border-radius: 8px;
-    padding: 15px;
-    position: relative;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    word-wrap: break-word; /* Important pour les textes longs */
-    white-space: pre-wrap; /* Préserve les retours à la ligne et espaces multiples */
-}
+        /* Styles pour la section d'upload direct Drive */
+        .drive-upload-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f8ff; /* Bleu très clair */
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+        }
 
-.note-item .delete-note-btn {
-    background: #dc3545; /* Rouge pour supprimer */
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-size: 0.8em;
-    position: absolute;
-    top: 5px;
-    right: 5px;
-}
-.note-item .delete-note-btn:hover {
-    background: #c82333;
-}
+        .drive-upload-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .drive-upload-section input[type="file"] {
+            display: block; /* Prend toute la largeur */
+            margin: 10px auto; /* Centre l'input */
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            width: 80%; /* Ajuste la largeur */
+            max-width: 300px;
+        }
+
+        .drive-upload-section button {
+            background-color: #28a745; /* Vert pour l'upload */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .drive-upload-section button:hover {
+            background-color: #218838;
+        }
+
+
+        /* Section Fichiers Locaux */
+        #preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            min-height: 150px;
+            max-height: 400px; /* Limite la hauteur pour le défilement */
+            overflow-y: auto; /* Ajoute une barre de défilement si nécessaire */
+            background-color: #fdfdfd;
+            margin-top: 15px;
+            align-content: flex-start; /* Aligne les éléments en haut */
+        }
+
+        .preview-box {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            width: calc(50% - 15px); /* Deux colonnes sur desktop, avec espace */
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .preview-box img {
+            max-width: 100%;
+            height: auto;
+            max-height: 100px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .preview-box .file-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .preview-box .file-name {
+            font-weight: bold;
+            margin-bottom: 10px;
+            word-wrap: break-word; /* Permet aux noms longs de se couper */
+            max-width: 100%;
+        }
+
+        .preview-buttons-container {
+            display: flex;
+            flex-wrap: wrap; /* Permet aux boutons de s'enrouler */
+            gap: 5px; /* Espace entre les boutons */
+            margin-top: 10px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .preview-buttons-container button,
+        .preview-buttons-container a {
+            flex: 1 1 auto; /* Permet aux boutons de s'étirer/rétrécir */
+            min-width: 100px; /* Largeur minimale pour éviter un rétrécissement excessif */
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9em;
+            text-decoration: none; /* Pour les liens (download-btn) */
+            display: flex; /* Pour centrer le texte */
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s ease;
+            box-shadow: none; /* Annule l'ombre du bouton général */
+            margin-top: 0; /* Annule la marge du bouton général */
+        }
+
+        .preview-buttons-container .download-btn {
+            background-color: #2ecc71; /* Vert pour télécharger */
+        }
+        .preview-buttons-container .remove-btn {
+            background-color: #e74c3c; /* Rouge pour supprimer */
+        }
+        .preview-buttons-container .drive-btn {
+            background-color: #f39c12; /* Orange pour Drive */
+        }
+
+        .preview-buttons-container button:hover,
+        .preview-buttons-container a:hover {
+            opacity: 0.9;
+        }
+
+
+        /* Section Notes */
+        #notes-container {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 150px;
+            max-height: 400px; /* Limite la hauteur pour le défilement */
+            overflow-y: auto; /* Ajoute une barre de défilement si nécessaire */
+            background-color: #fdfdfd;
+            margin-top: 15px;
+        }
+
+        .note-item {
+            background-color: #e9f5fe;
+            border: 1px solid #cce7ff;
+            border-radius: 6px;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95em;
+            word-wrap: break-word; /* Permet aux notes longues de se couper */
+        }
+
+        .note-item span {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+
+        .delete-note-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%; /* Bouton rond */
+            width: 25px;
+            height: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: none; /* Annule l'ombre du bouton général */
+            margin-top: 0; /* Annule la marge du bouton général */
+        }
+
+        .delete-note-btn:hover {
+            background-color: #c0392b;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 15px 20px;
+            margin-top: auto; /* Pousse le footer en bas */
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Media Queries pour la responsivité */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column; /* Les sections s'empilent sur mobile */
+                padding: 15px;
+                margin: 15px auto;
+            }
+
+            .section {
+                min-width: unset; /* Retire la largeur minimale */
+                width: 100%; /* Prend toute la largeur disponible */
+            }
+
+            .drive-item-box,
+            .preview-box {
+                width: 100%; /* Les éléments prennent toute la largeur sur mobile */
+            }
+
+            .preview-buttons-container button,
+            .preview-buttons-container a {
+                flex: 1 1 100%; /* Les boutons s'empilent */
+            }
+        }
+
+        /* Styles pour la modale de confirmation personnalisée (remplace alert/confirm) */
+        .custom-confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Assure qu'elle est au-dessus de tout */
+        }
+
+        .custom-confirm-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .custom-confirm-content p {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .custom-confirm-buttons button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        #confirm-yes {
+            background-color: #dc3545; /* Rouge pour "Oui" (supprimer) */
+            color: white;
+        }
+
+        #confirm-yes:hover {
+            background-color: #c82333;
+        }
+
+        #confirm-no {
+            background-color: #6c757d; /* Gris pour "Non" */
+            color: white;
+        }
+
+        #confirm-no:hover {
+            background-color: #5a6268;
+        }
     </style>
 </head>
 <body>
-    <div class="contenu">
-        <h1>Mon site</h1>
-        <div class="roman">
-            <h2>Fait par Roman SOUCY</h2>
-        </div>
-        <p style="text-align: center; max-width: 700px; margin: 30px auto;">
-            Bienvenue sur cette page d'exemple réalisée en HTML, CSS et JAVASCRIPT. Vous pouvez y retrouver un moyen de sauvegarde de fichier (local et Drive), des liens utiles, et une bannière en bas de page pour accéder rapidement aux sites web importants, ainsi qu'une section pour vos notes personnelles.
-        </p>
+    <header>
+        <h1>Mon Tableau de Bord Personnel</h1>
+    </header>
 
-        <div id="message-display"></div>
+    <div class="container">
+        <div class="section" id="google-drive-section">
+            <h2>Google Drive</h2>
+            <div id="google-auth-section">
+                <p>Statut de connexion : <span id="google-user">Déconnecté</span></p>
+                <button id="google-login-btn" disabled>Connexion Google</button>
+            </div>
+            <div id="message-display" class="message"></div>
 
-        <div id="main-content-wrapper">
-            <div id="notes-section">
-                <h3>Mes Notes Personnelles</h3>
-                <textarea id="notes-input" placeholder="Écrivez votre note ici..."></textarea>
-                <button id="add-note-btn">Ajouter la note</button>
-                <div id="notes-container">
-                    </div>
+            <div class="drive-actions">
+                <button id="show-drive-files-btn" class="drive-action-btn">Afficher mes fichiers Drive</button>
+                <button id="create-folder-btn" class="drive-action-btn">Créer un dossier</button>
             </div>
 
-            <div id="file-upload-section">
-                <h3 style="text-align: center; margin-top: 0;">Fichiers Locaux</h3>
-                <div class="bouton-ajout-image" style="text-align:center; margin: 30px 0;">
-                    <label for="file-upload" style="display:inline-block; background:#00ff15; color:#000; border-radius:20px; padding:10px 20px; cursor:pointer; font-size:1em;">
-                        Importer un fichier
-                        <input id="file-upload" type="file" multiple style="display:none;">
-                    </label>
-                </div>
-                <div id="preview-container" style="display:flex; flex-wrap:wrap; gap:16px; justify-content:center; margin-bottom:40px;"></div>
+            <div class="drive-upload-section">
+                <h3>Envoyer directement sur Google Drive</h3>
+                <input type="file" id="direct-drive-upload-input" multiple>
+                <button id="direct-drive-upload-btn">Envoyer les fichiers sélectionnés sur Drive</button>
             </div>
 
-            <div id="drive-section">
-                <h3 style="text-align: center; margin-top: 0;">Fichiers et Dossiers sur Google Drive</h3>
-                <div id="drive-path" style="text-align: center; margin-bottom: 10px;">
-                    Racine
-                </div>
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <button id="create-folder-btn" style="background:#fbc02d; color:#000; border-radius:20px; padding:10px 20px; cursor:pointer;">
-                        Créer un dossier
-                    </button>
-                </div>
-                <div id="drive-files-container" style="display:flex; flex-wrap:wrap; gap:16px; justify-content:center; margin-bottom:100px;">
-                    <p style="width: 100%; text-align: center; color: #777;">Cliquez sur "Afficher mes fichiers Drive" ci-dessous pour les charger.</p>
-                </div>
+            <div id="drive-path"></div> <div id="drive-files-container">
+                <p>Connectez-vous à Google Drive pour voir vos fichiers.</p>
             </div>
         </div>
 
-        <div class="banniere-bas">
-            <button onclick="window.location.href='mailto:roman.soucy@collegedesmuriers.fr'">Contacts</button>
-            <button onclick="displayMessage('Support non disponible pour le moment. Encore en développement 😅 ', 'info')">Support</button>
-            <button onclick="window.location.href='https://www.ecoledirecte.com/login?cameFrom=%2FAccueil'">Ecole Directe</button>
-            <button onclick="window.location.href='https://www.google.com'">Google</button>
-            <button onclick="window.location.href='https://www.lri.fr/~jacquot/progWeb/cours4/cours4.pdf'">Informations</button>
-            <button id="show-drive-files-btn" style="background:#4285F4;color:#fff;">
-                Afficher mes fichiers Drive
-            </button>
-            <button id="google-login-btn" style="background:#4285F4;color:#fff;">
-                Chargement Google Connexion...
-            </button>
-            <span id="google-user">Déconnecté</span>
+        <div class="section" id="local-files-section">
+            <h2>Mes Fichiers Locaux</h2>
+            <input type="file" id="file-upload" multiple>
+            <div id="preview-container">
+                <p>Déposez ou sélectionnez des fichiers ici.</p>
+            </div>
+        </div>
+
+        <div class="section" id="notes-section">
+            <h2>Mes Notes Personnelles</h2>
+            <textarea id="notes-input" placeholder="Écrivez votre note ici..."></textarea>
+            <button id="add-note-btn">Ajouter la note</button>
+            <div id="notes-container">
+                <p>Vos notes apparaîtront ici.</p>
+            </div>
         </div>
     </div>
 
-    <script src="Animation.js"></script> </body>
+    <footer>
+        <p>&copy; 2025 Mon Tableau de Bord Personnel - Roman Soucy</p>
+    </footer>
+
+    <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+
+    <script>
+        // Déclarations de constantes et variables (éléments du DOM, IDs API, etc.)
+        const previewContainer = document.getElementById('preview-container');
+        const messageDisplay = document.getElementById('message-display');
+        const googleLoginBtn = document.getElementById('google-login-btn');
+        const googleUserSpan = document.getElementById('google-user');
+        const fileUploadInput = document.getElementById('file-upload');
+        const showDriveFilesBtn = document.getElementById('show-drive-files-btn');
+        const driveFilesContainer = document.getElementById('drive-files-container');
+        const drivePathDisplay = document.getElementById('drive-path');
+        const createFolderBtn = document.getElementById('create-folder-btn');
+        const notesInput = document.getElementById('notes-input');
+        const notesContainer = document.getElementById('notes-container');
+        const addNoteBtn = document.getElementById('add-note-btn');
+
+        // Nouveaux éléments pour l'import direct vers Drive
+        const directDriveUploadInput = document.getElementById('direct-drive-upload-input');
+        const directDriveUploadBtn = document.getElementById('direct-drive-upload-btn');
+
+
+        // Identifiants et permissions Google API
+        const CLIENT_ID = '716108448607-4d46lrnamcdkk07jo2gaq7bc9pu47ag3.apps.googleusercontent.com'; // Remplace par ton CLIENT_ID
+        const API_KEY = 'AIzaSyBeHW_Izkd7InzeahDl6gGxI5OMyOhiFm8';     // Remplace par ton API_KEY
+
+        // Les permissions demandées à Google Drive
+        const SCOPES = [
+            'https://www.googleapis.com/auth/drive.file', // Accès aux fichiers créés ou ouverts par l'app
+            'https://www.googleapis.com/auth/drive.metadata.readonly' // Accès en lecture aux métadonnées (pour lister les fichiers/dossiers)
+        ];
+
+        let tokenClient;
+        let gapiInited = false;
+        let gisInited = false;
+        let accessToken; // Stocke le token d'accès Google
+
+        // Variable pour suivre le dossier courant dans Google Drive
+        // C'est une pile (stack) pour gérer la navigation dans les dossiers
+        let currentDrivePath = [{ id: 'root', name: 'Racine' }];
+
+        // Fonctions de rappel Google (gapiLoaded, gisLoaded)
+        function gapiLoaded() {
+            gapi.load('client', initializeGapiClient);
+        }
+
+        async function initializeGapiClient() {
+            await gapi.client.init({
+                apiKey: API_KEY,
+                discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
+            });
+            gapiInited = true;
+            maybeEnableButtons();
+        }
+
+        function gisLoaded() {
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES.join(' '),
+                callback: (tokenResponse) => {
+                    if (tokenResponse && tokenResponse.access_token) {
+                        accessToken = tokenResponse.access_token;
+                        gapi.client.setToken({ access_token: accessToken });
+                        googleLoginBtn.textContent = 'Déconnexion Google';
+                        googleUserSpan.textContent = 'Connecté';
+                        displayMessage('Connecté à Google Drive !', 'success');
+                        listDriveFiles(currentDrivePath[currentDrivePath.length - 1].id); // Liste les fichiers du dossier courant
+                    } else {
+                        googleLoginBtn.textContent = 'Connexion Google';
+                        googleUserSpan.textContent = 'Déconnecté';
+                        displayMessage('Déconnecté de Google Drive.', 'info');
+                        driveFilesContainer.innerHTML = '<p>Cliquez sur "Afficher mes fichiers Drive" ci-dessous pour les charger.</p>';
+                    }
+                },
+            });
+            gisInited = true;
+            maybeEnableButtons();
+        }
+
+        function maybeEnableButtons() {
+            if (gapiInited && gisInited) {
+                googleLoginBtn.textContent = 'Connexion Google';
+                googleLoginBtn.disabled = false;
+            }
+        }
+
+        // Fonction pour gérer la connexion/déconnexion Google
+        function handleAuthClick() {
+            if (accessToken) {
+                // Déconnexion
+                accessToken = null;
+                gapi.client.setToken(null); // Retire le token de gapi.client
+                googleLoginBtn.textContent = 'Connexion Google';
+                googleUserSpan.textContent = 'Déconnecté';
+                displayMessage('Déconnecté de Google Drive.', 'info');
+                driveFilesContainer.innerHTML = '<p>Cliquez sur "Afficher mes fichiers Drive" ci-dessous pour les charger.</p>';
+                // Réinitialise le chemin du Drive à la racine
+                currentDrivePath = [{ id: 'root', name: 'Racine' }];
+                updateDrivePathDisplay();
+            } else {
+                // Connexion
+                tokenClient.requestAccessToken();
+            }
+        }
+
+        // Événement DOMContentLoaded (le code s'exécute une fois que le HTML est chargé)
+        document.addEventListener('DOMContentLoaded', () => {
+            // Événements pour la connexion Google
+            if (googleLoginBtn) {
+                googleLoginBtn.onclick = handleAuthClick;
+            }
+            if (showDriveFilesBtn) {
+                showDriveFilesBtn.onclick = () => {
+                    if (accessToken) {
+                        listDriveFiles(currentDrivePath[currentDrivePath.length - 1].id);
+                    } else {
+                        displayMessage('Veuillez vous connecter à Google Drive d\'abord.', 'error');
+                    }
+                };
+            }
+
+            // Événements pour l'upload de fichiers locaux
+            if (fileUploadInput) {
+                fileUploadInput.addEventListener('change', function(event) {
+                    const files = Array.from(event.target.files);
+                    files.forEach((file) => {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            createPreviewBox(file.name, e.target.result, file.type);
+                            let saved = JSON.parse(localStorage.getItem('fichiers') || '[]');
+                            saved.push({ name: file.name, data: e.target.result, type: file.type });
+                            localStorage.setItem('fichiers', JSON.stringify(saved));
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                });
+            }
+
+            // Événements pour l'upload direct vers Drive (NOUVEAU)
+            if (directDriveUploadInput && directDriveUploadBtn) {
+                directDriveUploadBtn.addEventListener('click', () => {
+                    if (!accessToken) {
+                        displayMessage('Veuillez vous connecter à Google Drive d\'abord.', 'error');
+                        return;
+                    }
+                    if (directDriveUploadInput.files.length === 0) {
+                        displayMessage('Veuillez sélectionner un fichier à envoyer sur Drive.', 'error');
+                        return;
+                    }
+                    // Envoie tous les fichiers sélectionnés directement sur Drive
+                    Array.from(directDriveUploadInput.files).forEach(file => {
+                        uploadFileToDriveDirectly(file);
+                    });
+                    directDriveUploadInput.value = ''; // Réinitialise l'input après l'envoi
+                });
+            }
+
+
+            // Événements pour la création de dossier Drive
+            if (createFolderBtn) {
+                createFolderBtn.addEventListener('click', async () => {
+                    const folderName = prompt('Nom du nouveau dossier :');
+                    if (folderName) {
+                        await createFolder(folderName, currentDrivePath[currentDrivePath.length - 1].id);
+                    }
+                });
+            }
+
+            // Événements pour les notes
+            if (addNoteBtn) {
+                addNoteBtn.addEventListener('click', addNote);
+            }
+
+            // Chargement initial des données
+            loadLocalFiles();
+            loadNotes();
+            updateDrivePathDisplay(); // Met à jour l'affichage du chemin au chargement
+        });
+
+        // Fonctions utilitaires
+        function displayMessage(message, type) {
+            messageDisplay.textContent = message;
+            messageDisplay.className = `message ${type}`;
+            messageDisplay.style.display = 'block';
+            setTimeout(() => {
+                messageDisplay.style.display = 'none';
+            }, 5000); // Masque le message après 5 secondes
+        }
+
+        function dataURLtoBlob(dataurl) {
+            const arr = dataurl.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], { type: mime });
+        }
+
+        function loadLocalFiles() {
+            let saved = JSON.parse(localStorage.getItem('fichiers') || '[]');
+            saved.forEach(file => createPreviewBox(file.name, file.data, file.type));
+        }
+
+        function createPreviewBox(fileName, fileData, fileType) {
+            const previewBox = document.createElement('div');
+            previewBox.className = 'preview-box';
+
+            if (fileType.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = fileData;
+                img.alt = fileName;
+                previewBox.appendChild(img);
+            } else {
+                const icon = document.createElement('span');
+                icon.className = 'file-icon';
+                icon.textContent = '📄'; // Icône générique pour les fichiers non-image
+                previewBox.appendChild(icon);
+            }
+
+            const fileNameSpan = document.createElement('span');
+            fileNameSpan.className = 'file-name';
+            fileNameSpan.textContent = fileName;
+            previewBox.appendChild(fileNameSpan);
+
+            const buttonsContainer = document.createElement('div');
+            buttonsContainer.className = 'preview-buttons-container';
+
+            // Bouton Télécharger (pour les fichiers locaux)
+            const downloadLink = document.createElement('a');
+            downloadLink.href = fileData;
+            downloadLink.download = fileName;
+            downloadLink.textContent = 'Télécharger';
+            downloadLink.className = 'download-btn';
+            buttonsContainer.appendChild(downloadLink);
+
+            // Bouton Supprimer (pour les fichiers locaux)
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = 'Supprimer';
+            removeBtn.className = 'remove-btn';
+            removeBtn.onclick = () => {
+                previewBox.remove();
+                let saved = JSON.parse(localStorage.getItem('fichiers') || '[]');
+                saved = saved.filter(f => f.name !== fileName || f.data !== fileData); // Supprime l'élément correspondant
+                localStorage.setItem('fichiers', JSON.stringify(saved));
+                displayMessage('Fichier local supprimé !', 'info');
+            };
+            buttonsContainer.appendChild(removeBtn);
+
+            // Bouton Envoyer sur Drive (pour les fichiers locaux)
+            const driveBtn = document.createElement('button');
+            driveBtn.textContent = 'Envoyer sur Drive';
+            driveBtn.className = 'drive-btn';
+            driveBtn.onclick = async () => {
+                if (accessToken) {
+                    // Convertit le dataURL en Blob pour l'upload
+                    const blob = dataURLtoBlob(fileData);
+                    // Crée un objet File à partir du Blob pour réutiliser uploadFileToDriveDirectly
+                    const fileObject = new File([blob], fileName, { type: fileType });
+                    await uploadFileToDriveDirectly(fileObject);
+                    // Optionnel: supprimer le fichier local après l'upload sur Drive
+                    // removeBtn.click();
+                } else {
+                    displayMessage('Veuillez vous connecter à Google Drive d\'abord.', 'error');
+                }
+            };
+            buttonsContainer.appendChild(driveBtn);
+
+            previewBox.appendChild(buttonsContainer);
+            previewContainer.prepend(previewBox); // Ajoute le nouveau fichier en haut
+        }
+
+        // Fonctions Google Drive
+
+        // Fonction pour l'upload direct d'un fichier (objet File) vers Drive (NOUVELLE FONCTION)
+        async function uploadFileToDriveDirectly(fileObject) {
+            if (!accessToken) {
+                displayMessage('Non connecté à Google Drive.', 'error');
+                return;
+            }
+
+            displayMessage(`Envoi de "${fileObject.name}" sur Drive...`, 'info');
+
+            const fileMetadata = {
+                name: fileObject.name,
+                parents: [currentDrivePath[currentDrivePath.length - 1].id] // Ajoute le fichier dans le dossier courant
+            };
+
+            const form = new FormData();
+            form.append('metadata', new Blob([JSON.stringify(fileMetadata)], { type: 'application/json' }));
+            form.append('file', fileObject); // Ajoute l'objet File directement
+
+            try {
+                const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: form
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Erreur d'envoi : ${errorData.error.message}`);
+                }
+
+                const file = await response.json();
+                displayMessage(`Fichier "${file.name}" envoyé sur Google Drive !`, 'success');
+                listDriveFiles(currentDrivePath[currentDrivePath.length - 1].id); // Rafraîchit la liste Drive
+            } catch (error) {
+                console.error('Erreur lors de l\'envoi direct sur Drive :', error);
+                displayMessage(`Échec de l'envoi direct sur Drive : ${error.message}`, 'error');
+            }
+        }
+
+        async function listDriveFiles(folderId) {
+            if (!accessToken) {
+                displayMessage('Non connecté à Google Drive.', 'error');
+                return;
+            }
+
+            displayMessage('Chargement des fichiers Drive...', 'info');
+            driveFilesContainer.innerHTML = ''; // Vide le conteneur
+
+            try {
+                const response = await gapi.client.drive.files.list({
+                    pageSize: 100, // Nombre d'éléments à récupérer
+                    fields: 'nextPageToken, files(id, name, mimeType, parents)',
+                    q: `'${folderId}' in parents and trashed = false`, // Filtre par dossier parent et non corbeille
+                });
+
+                const files = response.result.files;
+                if (files && files.length > 0) {
+                    // Créer le bouton "Retour" si on n'est pas à la racine
+                    if (currentDrivePath.length > 1) {
+                        const backBtn = document.createElement('button');
+                        backBtn.textContent = 'Retour au dossier parent';
+                        backBtn.className = 'drive-action-btn back-btn';
+                        backBtn.onclick = goBackToParentFolder;
+                        driveFilesContainer.appendChild(backBtn);
+                    }
+
+                    files.forEach(file => {
+                        createDriveItemBox(file);
+                    });
+                    displayMessage('Fichiers Drive chargés.', 'success');
+                } else {
+                    displayMessage('Aucun fichier ou dossier dans ce répertoire.', 'info');
+                }
+            } catch (error) {
+                console.error('Erreur lors du listage des fichiers Drive :', error);
+                displayMessage(`Échec du chargement des fichiers Drive : ${error.message}`, 'error');
+            }
+        }
+
+        async function createFolder(folderName, parentId) {
+            if (!accessToken) {
+                displayMessage('Non connecté à Google Drive.', 'error');
+                return;
+            }
+
+            displayMessage(`Création du dossier "${folderName}"...`, 'info');
+
+            const fileMetadata = {
+                name: folderName,
+                mimeType: 'application/vnd.google-apps.folder',
+                parents: [parentId]
+            };
+
+            try {
+                const response = await gapi.client.drive.files.create({
+                    resource: fileMetadata,
+                    fields: 'id, name',
+                });
+
+                const folder = response.result;
+                displayMessage(`Dossier "${folder.name}" créé !`, 'success');
+                listDriveFiles(parentId); // Rafraîchit la liste
+            } catch (error) {
+                console.error('Erreur lors de la création du dossier :', error);
+                displayMessage(`Échec de la création du dossier : ${error.message}`, 'error');
+            }
+        }
+
+        async function deleteDriveFile(itemId, itemName) {
+            if (!accessToken) {
+                displayMessage('Non connecté à Google Drive.', 'error');
+                return;
+            }
+
+            // Utilise une modale personnalisée au lieu de confirm()
+            showCustomConfirm(`Êtes-vous sûr de vouloir supprimer "${itemName}" de Google Drive ?`, async () => {
+                displayMessage(`Suppression de "${itemName}"...`, 'info');
+                try {
+                    await gapi.client.drive.files.delete({
+                        fileId: itemId,
+                    });
+                    displayMessage(`"${itemName}" supprimé de Google Drive !`, 'success');
+                    listDriveFiles(currentDrivePath[currentDrivePath.length - 1].id); // Rafraîchit la liste
+                } catch (error) {
+                    console.error('Erreur lors de la suppression du fichier/dossier Drive :', error);
+                    displayMessage(`Échec de la suppression : ${error.message}`, 'error');
+                }
+            });
+        }
+
+        // Fonction pour télécharger un fichier depuis Google Drive (NOUVELLE FONCTION)
+        async function downloadDriveFile(fileId, fileName) {
+            if (!accessToken) {
+                displayMessage('Non connecté à Google Drive.', 'error');
+                return;
+            }
+
+            displayMessage(`Téléchargement de "${fileName}" depuis Drive...`, 'info');
+
+            try {
+                // Requête pour obtenir le contenu du fichier (alt: 'media')
+                const response = await gapi.client.drive.files.get({
+                    fileId: fileId,
+                    alt: 'media'
+                });
+
+                // Le contenu du fichier est dans response.body sous forme de Blob ou ArrayBuffer
+                // On crée un Blob à partir de ce contenu
+                const blob = new Blob([response.body], { type: response.headers['Content-Type'] });
+
+                // Créer un lien temporaire pour déclencher le téléchargement
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName; // Définit le nom du fichier à télécharger
+                document.body.appendChild(a); // Ajoute le lien au corps du document (nécessaire pour certains navigateurs)
+                a.click(); // Clique programmatiquement sur le lien pour déclencher le téléchargement
+                document.body.removeChild(a); // Supprime le lien temporaire
+                URL.revokeObjectURL(url); // Libère l'URL de l'objet
+
+                displayMessage(`"${fileName}" téléchargé depuis Google Drive !`, 'success');
+            } catch (error) {
+                console.error('Erreur lors du téléchargement depuis Drive :', error);
+                displayMessage(`Échec du téléchargement depuis Drive : ${error.message}`, 'error');
+            }
+        }
+
+
+        function createDriveItemBox(item) {
+            const itemBox = document.createElement('div');
+            itemBox.className = 'drive-item-box';
+
+            const icon = document.createElement('span');
+            icon.className = 'drive-icon';
+            if (item.mimeType === 'application/vnd.google-apps.folder') {
+                icon.textContent = '📁'; // Icône de dossier
+                itemBox.classList.add('folder');
+                itemBox.onclick = () => enterFolder(item.id, item.name); // Permet d'entrer dans le dossier
+            } else {
+                icon.textContent = '📄'; // Icône de fichier générique
+            }
+            itemBox.appendChild(icon);
+
+            const itemNameSpan = document.createElement('span');
+            itemNameSpan.className = 'item-name';
+            itemNameSpan.textContent = item.name;
+            itemBox.appendChild(itemNameSpan);
+
+            // Conteneur pour les boutons d'action du Drive Item
+            const driveItemButtons = document.createElement('div');
+            driveItemButtons.className = 'drive-item-buttons';
+
+            // Bouton Télécharger (pour les fichiers, pas les dossiers) (NOUVEAU)
+            if (item.mimeType !== 'application/vnd.google-apps.folder') {
+                const downloadDriveBtn = document.createElement('button');
+                downloadDriveBtn.textContent = 'Télécharger';
+                downloadDriveBtn.className = 'download-drive-btn';
+                downloadDriveBtn.onclick = (e) => {
+                    e.stopPropagation(); // Empêche le clic sur le dossier de se propager
+                    downloadDriveFile(item.id, item.name);
+                };
+                driveItemButtons.appendChild(downloadDriveBtn);
+            }
+
+            // Bouton Supprimer (pour fichiers et dossiers)
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'Supprimer';
+            deleteBtn.className = 'delete-drive-btn';
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation(); // Empêche l'événement de clic sur le dossier de se propager
+                deleteDriveFile(item.id, item.name);
+            };
+            driveItemButtons.appendChild(deleteBtn);
+
+            itemBox.appendChild(driveItemButtons); // Ajoute le conteneur de boutons à l'élément Drive
+
+            driveFilesContainer.appendChild(itemBox);
+        }
+
+        // Fonction pour entrer dans un dossier Google Drive
+        function enterFolder(folderId, folderName) {
+            currentDrivePath.push({ id: folderId, name: folderName }); // Ajoute le dossier à la pile
+            updateDrivePathDisplay();
+            listDriveFiles(folderId);
+        }
+
+        // Fonction pour revenir au dossier parent Google Drive
+        function goBackToParentFolder() {
+            if (currentDrivePath.length > 1) { // S'assurer qu'on n'est pas déjà à la racine
+                currentDrivePath.pop(); // Retire le dossier actuel de la pile
+                const parentFolder = currentDrivePath[currentDrivePath.length - 1];
+                updateDrivePathDisplay();
+                listDriveFiles(parentFolder.id);
+            } else {
+                displayMessage('Vous êtes déjà à la racine de Google Drive.', 'info');
+            }
+        }
+
+        // Fonction pour mettre à jour l'affichage du chemin du dossier Google Drive
+        function updateDrivePathDisplay() {
+            drivePathDisplay.innerHTML = ''; // Vide l'affichage actuel
+            currentDrivePath.forEach((folder, index) => {
+                const span = document.createElement('span');
+                span.textContent = folder.name;
+                span.className = 'path-segment';
+                span.onclick = () => {
+                    // Permet de cliquer sur un segment du chemin pour y revenir
+                    currentDrivePath.splice(index + 1); // Tronque la pile à ce point
+                    updateDrivePathDisplay();
+                    listDriveFiles(folder.id);
+                };
+                drivePathDisplay.appendChild(span);
+                if (index < currentDrivePath.length - 1) {
+                    const separator = document.createElement('span');
+                    separator.textContent = ' / ';
+                    separator.className = 'path-separator';
+                    drivePathDisplay.appendChild(separator);
+                }
+            });
+        }
+
+        // NOUVELLES FONCTIONS POUR LA GESTION DES NOTES
+        function addNote() {
+            const noteContent = notesInput.value.trim();
+            if (noteContent) {
+                let notes = JSON.parse(localStorage.getItem('notes') || '[]');
+                notes.push(noteContent);
+                localStorage.setItem('notes', JSON.stringify(notes));
+                createNoteElement(noteContent);
+                notesInput.value = '';
+                displayMessage('Note ajoutée !', 'success');
+            } else {
+                displayMessage('Veuillez écrire une note.', 'error');
+            }
+        }
+
+        function createNoteElement(noteContent) {
+            const noteItem = document.createElement('div');
+            noteItem.className = 'note-item';
+
+            const noteText = document.createElement('span');
+            noteText.textContent = noteContent;
+            noteItem.appendChild(noteText);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'X';
+            deleteBtn.className = 'delete-note-btn';
+            deleteBtn.onclick = function() {
+                deleteNote(noteContent, noteItem);
+            };
+            noteItem.appendChild(deleteBtn);
+
+            notesContainer.prepend(noteItem);
+        }
+
+        function deleteNote(noteContent, noteElement) {
+            let notes = JSON.parse(localStorage.getItem('notes') || '[]');
+            const index = notes.indexOf(noteContent);
+            if (index > -1) {
+                notes.splice(index, 1);
+                localStorage.setItem('notes', JSON.stringify(notes));
+                noteElement.remove();
+                displayMessage('Note supprimée !', 'info');
+            }
+        }
+
+        function loadNotes() {
+            let notes = JSON.parse(localStorage.getItem('notes') || '[]');
+            notes.reverse().forEach(note => createNoteElement(note));
+        }
+
+        // Custom Confirm Dialog (remplace window.confirm)
+        function showCustomConfirm(message, onConfirm) {
+            const confirmModal = document.createElement('div');
+            confirmModal.className = 'custom-confirm-modal';
+            confirmModal.innerHTML = `
+                <div class="custom-confirm-content">
+                    <p>${message}</p>
+                    <div class="custom-confirm-buttons">
+                        <button id="confirm-yes">Oui</button>
+                        <button id="confirm-no">Non</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(confirmModal);
+
+            document.getElementById('confirm-yes').onclick = () => {
+                onConfirm();
+                confirmModal.remove();
+            };
+            document.getElementById('confirm-no').onclick = () => {
+                confirmModal.remove();
+            };
+        }
+    </script>
+</body>
 </html>
