@@ -13,8 +13,8 @@ const notesContainer = document.getElementById('notes-container');
 const addNoteBtn = document.getElementById('add-note-btn');
 
 // Identifiants et permissions Google API
-const CLIENT_ID = 'YOUR_CLIENT_ID'; // Remplace par ton CLIENT_ID
-const API_KEY = 'YOUR_API_KEY';     // Remplace par ton API_KEY
+const CLIENT_ID = '716108448607-4d46lrnamcdkk07jo2gaq7bc9pu47ag3.apps.googleusercontent.com';
+const API_KEY = 'AIzaSyBeHW_Izkd7InzeahDl6gGxI5OMyOhiFm8';
 
 // Les permissions demandées à Google Drive
 const SCOPES = [
