@@ -125,6 +125,7 @@
             flex-direction: column;
             align-items: center;
             padding-top: 120px; /* Espace pour les boutons en haut */
+            word-wrap: break-word; /* Important pour les noms de fichiers longs */
         }
         .preview-box img {
             max-width: 100%;
@@ -134,7 +135,7 @@
         }
         .preview-box .file-name {
             margin: 10px 0;
-            word-wrap: break-word; /* Permet au nom de fichier de se couper */
+            font-size: 0.9em; /* Légèrement plus petit pour les noms de fichiers */
         }
         .preview-buttons-container {
             display: flex;
@@ -169,6 +170,280 @@
         .preview-buttons-container .drive-btn { /* Style spécifique pour le bouton Drive */
             position: static !important;
         }
+
+        /* Nouveau style pour les fichiers venant de Google Drive */
+        .drive-item-box { /* Renommé de .drive-file-box pour inclure les dossiers */
+            border: 2px solid #4285F4; /* Bordure bleue Google */
+            border-radius: 15px;
+            padding: 10px;
+            background: #e6f0ff; /* Fond bleu clair */
+            position: relative;
+            width: 180px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between; /* Pour pousser le bouton delete en bas */
+            padding-bottom: 50px; /* Espace pour le bouton supprimer */
+            word-wrap: break-word;
+            cursor: pointer; /* Indique que c'est cliquable */
+        }
+        .drive-item-box:hover {
+            background-color: #d0e7ff; /* Légèrement plus foncé au survol */
+        }
+        .drive-item-box.folder {
+            border-color: #fbc02d; /* Couleur dossier jaune */
+            background-color: #fffde7; /* Fond jaune clair */
+        }
+        .drive-item-box.folder:hover {
+            background-color: #fff9c4;
+        }
+        .drive-item-box .file-name {
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .drive-item-box .item-type { /* Renommé de .mime-type */
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .drive-item-box .delete-drive-btn {
+            background: #d9534f; /* Rouge pour supprimer */
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 20px); /* Presque toute la largeur */
+        }
+        .drive-item-box .delete-drive-btn:hover {
+            background: #c9302c;
+        }
+
+        #drive-path {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #333;
+        }
+        #drive-path a {
+            color: #4285F4;
+            text-decoration: none;
+        }
+        #drive-path a:hover {
+            text-decoration: underline;
+        }
+
+        /* NOUVEAUX STYLES POUR LA SECTION NOTES */
+        #main-content-wrapper {
+            display: flex; /* Utilise flexbox pour aligner le contenu principal */
+            justify-content: center; /* Centre le contenu horizontalement */
+            gap: 30px; /* Espacement entre les colonnes */
+            margin: 30px auto;
+            max-width: 1200px; /* Largeur maximale pour le contenu */
+            flex-wrap: wrap; /* Permet aux colonnes de passer à la ligne sur petits écrans */
+        }
+
+        #file-upload-section,
+        #drive-section,
+        #notes-section {
+            flex: 1; /* Permet aux sections de prendre de l'espace */
+            min-width: 300px; /* Largeur minimale pour éviter le rétrécissement excessif */
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        #file-upload-section {
+            order: 2; /* Ordre visuel */
+        }
+        #drive-section {
+            order: 3; /* Ordre visuel */
+        }
+        #notes-section {
+            order: 1; /* Place la section notes en première position (à gauche) */
+            background-color: #ffe; /* Couleur légèrement différente pour les notes */
+            border: 2px solid #ffc107; /* Bordure jaune */
+            display: flex;
+            flex-direction: column;
+        }
+
+        #notes-section h3 {
+            text-align: center;
+            margin-top: 0;
+            color: #333;
+        }
+
+        #notes-input {
+            width: calc(100% - 20px); /* Prend presque toute la largeur */
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box; /* Inclut padding et border dans la largeur */
+            font-size: 1em;
+            resize: vertical; /* Permet de redimensionner la hauteur */
+        }
+
+        #add-note-btn {
+            background: #28a745; /* Vert pour ajouter */
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-bottom: 20px;
+            display: block; /* Pour centrer si besoin */
+            width: fit-content;
+            margin: 0 auto 20px auto; /* Centre le bouton */
+        }
+        #add-note-btn:hover {
+            background: #218838;
+        }
+
+        #notes-container {
+            display: flex;
+            flex-direction: column; /* Empile les notes verticalement */
+            gap: 10px;
+            flex-grow: 1; /* Permet au conteneur de prendre l'espace restant */
+        }
+
+        .note-item {
+            background-color: #fffacd; /* Jaune clair pour les notes */
+            border: 1px solid #ffeb3b;
+            border-radius: 8px;
+            padding: 15px;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            word-wrap: break-word; /* Important pour les textes longs */
+        }
+
+        .note-item .delete-note-btn {
+            background: #dc3545; /* Rouge pour supprimer */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.8em;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+        }
+        .note-item .delete-note-btn:hover {
+            background: #c82333;
+        }
+        /* ... (ton CSS existant, sans changement) ... */
+
+/* NOUVEAUX STYLES POUR LA STRUCTURE DES COLONNES */
+#main-content-wrapper {
+    display: flex; /* Utilise flexbox pour aligner le contenu principal */
+    justify-content: center; /* Centre le contenu horizontalement */
+    gap: 30px; /* Espacement entre les colonnes */
+    margin: 30px auto;
+    max-width: 1200px; /* Largeur maximale pour le contenu */
+    flex-wrap: wrap; /* Permet aux colonnes de passer à la ligne sur petits écrans */
+}
+
+#file-upload-section,
+#drive-section,
+#notes-section {
+    flex: 1; /* Permet aux sections de prendre de l'espace égal */
+    min-width: 300px; /* Largeur minimale pour éviter le rétrécissement excessif sur petits écrans */
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+#file-upload-section {
+    order: 2; /* Place la section d'upload au milieu */
+}
+#drive-section {
+    order: 3; /* Place la section Drive à droite */
+}
+#notes-section {
+    order: 1; /* Place la section notes en première position (à gauche) */
+    background-color: #fff; /* Fond légèrement différent pour les notes */
+    border: 2px solid #ffc107; /* Bordure jaune pour les notes */
+    display: flex; /* Utilise flexbox pour son contenu interne */
+    flex-direction: column; /* Empile les éléments verticalement */
+}
+
+#notes-section h3 {
+    text-align: center;
+    margin-top: 0;
+    color: #333;
+}
+
+#notes-input {
+    width: calc(100% - 20px); /* Prend presque toute la largeur avec padding */
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box; /* Inclut padding et border dans la largeur */
+    font-size: 1em;
+    resize: vertical; /* Permet à l'utilisateur de redimensionner la hauteur de la zone de texte */
+}
+
+#add-note-btn {
+    background: #28a745; /* Vert pour ajouter */
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-bottom: 20px;
+    display: block; /* Pour centrer le bouton */
+    width: fit-content; /* S'adapte au contenu du texte */
+    margin: 0 auto 20px auto; /* Centre le bouton */
+}
+#add-note-btn:hover {
+    background: #218838;
+}
+
+#notes-container {
+    display: flex;
+    flex-direction: column; /* Empile les notes verticalement */
+    gap: 10px; /* Espacement entre les notes */
+    flex-grow: 1; /* Permet au conteneur de notes de prendre l'espace restant */
+}
+
+.note-item {
+    background-color: #fffacd; /* Jaune clair pour les notes */
+    border: 1px solid #ffeb3b;
+    border-radius: 8px;
+    padding: 15px;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    word-wrap: break-word; /* Important pour les textes longs */
+    white-space: pre-wrap; /* Préserve les retours à la ligne et espaces multiples */
+}
+
+.note-item .delete-note-btn {
+    background: #dc3545; /* Rouge pour supprimer */
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 0.8em;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+.note-item .delete-note-btn:hover {
+    background: #c82333;
+}
     </style>
 </head>
 <body>
@@ -178,18 +453,46 @@
             <h2>Fait par Roman SOUCY</h2>
         </div>
         <p style="text-align: center; max-width: 700px; margin: 30px auto;">
-            Bienvenue sur cette page d'exemple réalisée en HTML, CSS et JAVASCRIPT. Vous pouvez y retrouver un moyen de sauvegarde de fichier (limité à 5 MO), des liens utiles, et une bannière en bas de page pour accéder rapidement aux sites web importants.
+            Bienvenue sur cette page d'exemple réalisée en HTML, CSS et JAVASCRIPT. Vous pouvez y retrouver un moyen de sauvegarde de fichier (local et Drive), des liens utiles, et une bannière en bas de page pour accéder rapidement aux sites web importants, ainsi qu'une section pour vos notes personnelles.
         </p>
 
         <div id="message-display"></div>
 
-        <div class="bouton-ajout-image" style="text-align:center; margin: 30px 0;">
-            <label for="file-upload" style="display:inline-block; background:#00ff15; color:#000; border-radius:20px; padding:10px 20px; cursor:pointer; font-size:1em;">
-                Importer un fichier
-                <input id="file-upload" type="file" multiple style="display:none;">
-            </label>
+        <div id="main-content-wrapper">
+            <div id="notes-section">
+                <h3>Mes Notes Personnelles</h3>
+                <textarea id="notes-input" placeholder="Écrivez votre note ici..."></textarea>
+                <button id="add-note-btn">Ajouter la note</button>
+                <div id="notes-container">
+                    </div>
+            </div>
+
+            <div id="file-upload-section">
+                <h3 style="text-align: center; margin-top: 0;">Fichiers Locaux</h3>
+                <div class="bouton-ajout-image" style="text-align:center; margin: 30px 0;">
+                    <label for="file-upload" style="display:inline-block; background:#00ff15; color:#000; border-radius:20px; padding:10px 20px; cursor:pointer; font-size:1em;">
+                        Importer un fichier
+                        <input id="file-upload" type="file" multiple style="display:none;">
+                    </label>
+                </div>
+                <div id="preview-container" style="display:flex; flex-wrap:wrap; gap:16px; justify-content:center; margin-bottom:40px;"></div>
+            </div>
+
+            <div id="drive-section">
+                <h3 style="text-align: center; margin-top: 0;">Fichiers et Dossiers sur Google Drive</h3>
+                <div id="drive-path" style="text-align: center; margin-bottom: 10px;">
+                    Racine
+                </div>
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <button id="create-folder-btn" style="background:#fbc02d; color:#000; border-radius:20px; padding:10px 20px; cursor:pointer;">
+                        Créer un dossier
+                    </button>
+                </div>
+                <div id="drive-files-container" style="display:flex; flex-wrap:wrap; gap:16px; justify-content:center; margin-bottom:100px;">
+                    <p style="width: 100%; text-align: center; color: #777;">Cliquez sur "Afficher mes fichiers Drive" ci-dessous pour les charger.</p>
+                </div>
+            </div>
         </div>
-        <div id="preview-container" style="display:flex; flex-wrap:wrap; gap:16px; justify-content:center; margin-bottom:40px;"></div>
 
         <div class="banniere-bas">
             <button onclick="window.location.href='mailto:roman.soucy@collegedesmuriers.fr'">Contacts</button>
@@ -197,6 +500,9 @@
             <button onclick="window.location.href='https://www.ecoledirecte.com/login?cameFrom=%2FAccueil'">Ecole Directe</button>
             <button onclick="window.location.href='https://www.google.com'">Google</button>
             <button onclick="window.location.href='https://www.lri.fr/~jacquot/progWeb/cours4/cours4.pdf'">Informations</button>
+            <button id="show-drive-files-btn" style="background:#4285F4;color:#fff;">
+                Afficher mes fichiers Drive
+            </button>
             <button id="google-login-btn" style="background:#4285F4;color:#fff;">
                 Chargement Google Connexion...
             </button>
