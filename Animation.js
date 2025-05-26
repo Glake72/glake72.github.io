@@ -653,3 +653,49 @@ function loadNotes() {
     // Affiche les notes dans l'ordre inverse pour que les plus récentes soient en haut
     notes.reverse().forEach(note => createNoteElement(note));
 }
+
+// Bouton "Importer dans Drive"
+document.getElementById('upload-to-drive-btn').addEventListener('click', async () => {
+    const files = document.getElementById('file-upload').files;
+    if (!files.length) {
+        alert("Veuillez sélectionner un fichier à importer.");
+        return;
+    }
+
+    for (const file of files) {
+        const metadata = {
+            name: file.name,
+            parents: [currentFolderId || 'root']
+        };
+
+        const form = new FormData();
+        form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+        form.append('file', file);
+
+        const accessToken = gapi.auth.getToken().access_token;
+        const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
+            method: 'POST',
+            headers: new Headers({ 'Authorization': 'Bearer ' + accessToken }),
+            body: form,
+        });
+
+        if (response.ok) {
+            console.log(`${file.name} envoyé dans Drive`);
+        } else {
+            alert("Erreur lors de l'envoi du fichier " + file.name);
+        }
+    }
+
+    listFilesInFolder(currentFolderId);
+});
+
+// Bouton "Retour"
+document.getElementById('go-back-btn').addEventListener('click', () => {
+    if (folderHistory.length > 1) {
+        folderHistory.pop();
+        const previousFolderId = folderHistory[folderHistory.length - 1];
+        listFilesInFolder(previousFolderId);
+    } else {
+        alert("Vous êtes déjà à la racine.");
+    }
+});
