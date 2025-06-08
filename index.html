@@ -3,511 +3,797 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Page web</title>
+    <title>Mon Tableau de Bord Intégré</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
     <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
     <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
 
     <style>
+        /* Variables CSS pour faciliter les changements de thème */
+        :root {
+            --primary-color: #4285F4; /* Bleu Google */
+            --secondary-color: #34A853; /* Vert Google */
+            --accent-color: #FBBC05; /* Jaune Google */
+            --danger-color: #EA4335; /* Rouge Google */
+            --text-color: #333;
+            --light-text-color: #666;
+            --background-light: #F0F4F8; /* Gris très clair, doux */
+            --background-card: #FFFFFF;
+            --border-radius-card: 16px;
+            --border-radius-button: 28px;
+            --shadow-subtle: 0 4px 15px rgba(0,0,0,0.08);
+            --shadow-hover: 0 8px 25px rgba(0,0,0,0.15);
+            --header-bg: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); /* Dégradé foncé */
+            --footer-bg: #2c3e50;
+        }
+
         /* Définition des keyframes pour l'animation de fond */
-        @keyframes fondAnime {
-            0% { background-color: #ffffff; } /* Blanc */
-            25% { background-color: #f0f8ff; } /* AliceBlue */
-            50% { background-color: #e6e6fa; } /* Lavender */
-            75% { background-color: #f0f0f0; } /* Gris clair */
-            100% { background-color: #ffffff; } /* Retour au blanc */
+        @keyframes gradientBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif; /* Police principale */
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            background-color: white;
-            color: #000;
-            animation: fondAnime 10s ease-in-out infinite; /* Application de l'animation */
+            background: linear-gradient(135deg, var(--background-light), #E3F2FD); /* Dégradé doux et moderne */
+            background-size: 200% 200%;
+            animation: gradientBackground 20s ease infinite;
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden; /* Empêche le défilement horizontal */
         }
-        .roman {
+
+        /* En-tête */
+        .main-header {
             text-align: center;
-            border-radius: 30px;
-            margin: 20px auto;
-            max-width: 500px;
-            background: #b8daf9;
-            font-weight: bold;
-            font-size: 0.7em;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            padding: 50px 20px;
+            background: var(--header-bg);
+            color: #fff;
+            box-shadow: var(--shadow-subtle);
+            border-bottom-left-radius: var(--border-radius-card);
+            border-bottom-right-radius: var(--border-radius-card);
+            margin-bottom: 40px;
+            position: relative; /* Pour le pseudo-élément */
+            overflow: hidden; /* Pour cacher le débordement du pseudo-élément */
         }
-        .contenu {
+
+        /* Effet subtil pour le header */
+        .main-header::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            transform: rotate(45deg);
+        }
+
+        .main-header h1 {
+            font-size: 3em;
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #fff;
+            position: relative; /* Pour z-index */
+            z-index: 1;
+        }
+
+        .main-header .subtitle {
+            font-size: 1.2em;
+            color: #E0E0E0;
+            margin-top: 10px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative; /* Pour z-index */
+            z-index: 1;
+        }
+
+        .roman-signature {
+            text-align: center;
+            margin: 25px auto 0;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.1); /* Plus transparent */
+            border-radius: var(--border-radius-button);
+            padding: 12px 25px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            position: relative; /* Pour z-index */
+            z-index: 1;
+        }
+
+        /* Contenu principal */
+        .main-content-grid {
             flex: 1;
             padding: 30px;
-            padding-bottom: 80px; /* Espace pour la bannière fixe du bas */
+            padding-bottom: 120px; /* Espace pour la bannière fixe du bas */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* 3 colonnes flexibles */
+            gap: 30px; /* Espacement entre les cartes */
+            max-width: 1300px;
+            margin: 0 auto;
+            align-items: flex-start; /* Aligner les cartes en haut */
         }
-        h1, h2 {
-            text-align: center;
-            border: 2px solid #00ff1a;
-            border-radius: 30px;
-            padding: 10px;
-            margin: 20px auto;
-            max-width: 600px;
-        }
-        .banniere-bas {
-            width: 100%;
-            background: #00ff15; /* Couleur de fond de la bannière */
-            color: rgb(197, 6, 6); /* Couleur du texte principal, à revoir pour le contraste */
+
+        .section-card {
+            background-color: var(--background-card);
+            border-radius: var(--border-radius-card);
+            box-shadow: var(--shadow-subtle);
+            padding: 30px;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 15px 0;
-            position: fixed; /* Rendre la bannière fixe en bas */
-            left: 0;
-            bottom: 0;
-            box-shadow: 0 -2px 8px rgba(0,0,0,0.07); /* Ombre légère pour la bannière */
-            z-index: 1000; /* Assure que la bannière est au-dessus des autres éléments */
-            flex-wrap: wrap; /* Permet aux boutons de passer à la ligne sur petits écrans */
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: fit-content; /* S'adapte au contenu */
         }
-        .banniere-bas button {
-            background: #00ff15; /* Boutons avec le même fond que la bannière */
-            color: #000000; /* Texte noir sur les boutons */
-            border: none;
-            border-radius: 20px;
-            margin: 0 10px;
-            padding: 10px 20px;
-            font-size: 1em;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s;
-            white-space: nowrap; /* Empêche les boutons de passer à la ligne */
+
+        .section-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
         }
-        .banniere-bas button:hover {
-            background: #000000; /* Fond noir au survol */
-            color: rgb(255, 255, 255); /* Texte blanc au survol */
+
+        .section-card h3 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+            color: var(--primary-color);
+            border-bottom: 3px solid #E0E0E0;
+            padding-bottom: 15px;
+            font-weight: 600;
         }
-        /* Style pour les messages d'erreur/succès */
+
+        /* Messages d'information/erreur */
         #message-display {
             text-align: center;
             margin: 20px auto;
-            max-width: 600px;
-            padding: 10px;
-            border-radius: 5px;
+            max-width: 700px;
+            padding: 15px;
+            border-radius: 10px;
             font-weight: bold;
-            display: none; /* Caché par défaut */
+            display: none;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-family: 'Inter', sans-serif;
         }
         #message-display.success {
-            background-color: #d4edda;
+            background-color: #D4EDDA;
             color: #155724;
-            border: 1px solid #c3e6cb;
+            border: 1px solid #C3E6CB;
         }
         #message-display.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background-color: #F8D7DA;
+            color: #721C24;
+            border: 1px solid #F5C6CB;
         }
-        #message-display.info { /* Nouveau style pour les messages d'information */
-            background-color: #e2e3e5;
-            color: #383d41;
-            border: 1px solid #d6d8db;
+        #message-display.info {
+            background-color: #E2E3E5;
+            color: #383D41;
+            border: 1px solid #D6D8DB;
         }
-        #google-user {
-            margin-left: 10px;
-            font-weight: bold;
-            color: #000; /* Assure une bonne visibilité du texte de statut */
+
+        /* Boutons génériques */
+        button {
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: var(--border-radius-button);
+            padding: 12px 30px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            font-weight: 600;
+            display: inline-flex; /* Pour centrer le texte/icône */
+            align-items: center;
+            justify-content: center;
+            gap: 8px; /* Espace entre texte et icône si ajoutée */
         }
-        /* Styles pour les boutons dans la previewBox, pour améliorer leur positionnement */
-        .preview-box {
-            border: 2px solid #00ff15;
-            border-radius: 15px;
-            padding: 10px;
-            background: #f0f0f0;
-            position: relative;
-            width: 180px; /* Légèrement plus large pour les boutons */
+        button:hover {
+            background: #3A75D0;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+        button:disabled {
+            background-color: #CCCCCC;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+            opacity: 0.8;
+        }
+
+        /* Styles spécifiques aux inputs de fichier */
+        .file-upload-label {
+            display: inline-block;
+            background: var(--secondary-color);
+            color: #fff;
+            border-radius: var(--border-radius-button);
+            padding: 12px 30px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            font-weight: 600;
+        }
+        .file-upload-label:hover {
+            background: #2B8D44;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+        #file-upload {
+            display: none; /* Cache l'input de fichier par défaut */
+        }
+
+        /* Conteneurs de fichiers/éléments */
+        #preview-container, #drive-files-container, #notes-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 25px;
+            padding: 15px;
+            border: 1px solid #E0E0E0;
+            border-radius: var(--border-radius-card);
+            background-color: #FDFDFD;
+            overflow-y: auto;
+            max-height: 450px; /* Hauteur maximale pour le défilement */
+            align-content: flex-start; /* Aligner les éléments en haut */
+            min-height: 150px;
+        }
+        #notes-container {
+            flex-direction: column; /* Les notes s'empilent */
+            align-items: stretch;
+            max-height: 400px;
+        }
+
+
+        /* Styles des boîtes de prévisualisation (locales) */
+        .file-item-card {
+            border: 1px solid #E0E0E0;
+            border-radius: 12px;
+            padding: 15px;
+            background: var(--background-card);
+            width: 180px; /* Largeur fixe pour la grille */
             text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 120px; /* Espace pour les boutons en haut */
-            word-wrap: break-word; /* Important pour les noms de fichiers longs */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative; /* Pour le positionnement des icônes/boutons */
         }
-        .preview-box img {
+        .file-item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .file-item-card img {
             max-width: 100%;
             max-height: 100px;
-            display: block; /* Supprime l'espace sous l'image */
-            margin: 0 auto 10px; /* Centre l'image et ajoute une marge en bas */
+            display: block;
+            margin: 0 auto 10px;
+            border-radius: 8px;
+            object-fit: contain; /* Empêche l'image de se déformer */
         }
-        .preview-box .file-name {
+        .file-item-card .file-icon {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        .file-item-card .file-name {
             margin: 10px 0;
-            font-size: 0.9em; /* Légèrement plus petit pour les noms de fichiers */
+            font-size: 0.9em;
+            font-weight: 600;
+            color: var(--text-color);
+            word-break: break-word;
+            flex-grow: 1; /* Permet au nom de prendre de l'espace */
         }
-        .preview-buttons-container {
-            display: flex;
-            flex-direction: column; /* Empile les boutons verticalement */
-            gap: 5px; /* Espacement entre les boutons */
-            position: absolute; /* Positionnement absolu pour les boutons */
-            top: 5px; /* Aligné en haut */
-            left: 5px; /* Aligné à gauche */
-            width: calc(100% - 10px); /* Prend toute la largeur de la previewBox moins le padding */
-        }
-        .preview-buttons-container button,
-        .preview-buttons-container a {
-            position: static !important; /* Rend les boutons statiques dans leur conteneur flex */
-            margin: 0; /* Supprime les marges externes */
-            padding: 5px 10px;
-            font-size: 0.8em; /* Taille de police légèrement plus petite */
-            width: 100%; /* Les boutons prennent toute la largeur du conteneur */
-            box-sizing: border-box; /* Inclut padding et border dans la largeur */
-        }
-        .preview-buttons-container .remove-btn { /* Style spécifique pour le bouton supprimer */
-            background: #ff4d4d;
-            color: #fff;
-            position: absolute; /* Place le bouton supprimer en bas à droite */
-            bottom: 5px;
-            right: 5px;
-            left: auto; /* Annule le left: 5px; */
-            width: auto; /* Laisse le bouton reprendre sa largeur naturelle */
-        }
-        .preview-buttons-container .download-btn { /* Style spécifique pour le bouton télécharger */
-            position: static !important;
-            border-radius: 15px;
-        }
-        .preview-buttons-container .drive-btn { /* Style spécifique pour le bouton Drive */
-            position: static !important;
-        }
-
-        /* Nouveau style pour les fichiers venant de Google Drive */
-        .drive-item-box { /* Renommé de .drive-file-box pour inclure les dossiers */
-            border: 2px solid #4285F4; /* Bordure bleue Google */
-            border-radius: 15px;
-            padding: 10px;
-            background: #e6f0ff; /* Fond bleu clair */
-            position: relative;
-            width: 180px;
-            text-align: center;
+        .item-buttons-container {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: space-between; /* Pour pousser le bouton delete en bas */
-            padding-bottom: 50px; /* Espace pour le bouton supprimer */
-            word-wrap: break-word;
-            cursor: pointer; /* Indique que c'est cliquable */
+            gap: 8px;
+            margin-top: 15px;
+            width: 100%;
         }
-        .drive-item-box:hover {
-            background-color: #d0e7ff; /* Légèrement plus foncé au survol */
+        .item-buttons-container button,
+        .item-buttons-container a {
+            padding: 8px 12px;
+            font-size: 0.85em;
+            border-radius: 8px;
+            box-shadow: none;
+            margin: 0;
+            width: 100%;
+            font-weight: 500;
         }
-        .drive-item-box.folder {
-            border-color: #fbc02d; /* Couleur dossier jaune */
-            background-color: #fffde7; /* Fond jaune clair */
+        .item-buttons-container .download-btn {
+            background: var(--secondary-color);
         }
-        .drive-item-box.folder:hover {
-            background-color: #fff9c4;
+        .item-buttons-container .download-btn:hover {
+            background: #218838;
         }
-        .drive-item-box .file-name {
-            margin: 10px 0;
-            font-weight: bold;
+        .item-buttons-container .remove-btn {
+            background: var(--danger-color);
         }
-        .drive-item-box .item-type { /* Renommé de .mime-type */
-            font-size: 0.8em;
-            color: #666;
-            margin-bottom: 10px;
+        .item-buttons-container .remove-btn:hover {
+            background: #C82333;
         }
-        .drive-item-box .delete-drive-btn {
-            background: #d9534f; /* Rouge pour supprimer */
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            padding: 5px 10px;
-            cursor: pointer;
-            position: absolute;
-            bottom: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 20px); /* Presque toute la largeur */
+        .item-buttons-container .drive-btn {
+            background: var(--accent-color);
+            color: var(--text-color); /* Texte plus foncé sur fond jaune */
         }
-        .drive-item-box .delete-drive-btn:hover {
-            background: #c9302c;
+        .item-buttons-container .drive-btn:hover {
+            background: #E0AC00;
         }
 
+        /* Styles des éléments Google Drive */
+        .drive-item-card {
+            background: #F0F8FF; /* Bleu très clair */
+            border: 1px solid #CCE7FF;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+        .drive-item-card:hover {
+            background-color: #E0F0FF;
+        }
+        .drive-item-card.folder {
+            border-color: #FBD995; /* Bordure jaune pour les dossiers */
+            background-color: #FFF8E1; /* Fond jaune très clair */
+            cursor: pointer;
+        }
+        .drive-item-card.folder:hover {
+            background-color: #FFF3CD;
+        }
+        .drive-item-card .drive-icon {
+            color: var(--primary-color);
+        }
+        .drive-item-card.folder .drive-icon {
+            color: var(--accent-color);
+        }
+
+        /* Chemin Google Drive */
         #drive-path {
             text-align: center;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #333;
-        }
-        #drive-path a {
-            color: #4285F4;
-            text-decoration: none;
-        }
-        #drive-path a:hover {
-            text-decoration: underline;
-        }
-
-        /* NOUVEAUX STYLES POUR LA SECTION NOTES */
-        #main-content-wrapper {
-            display: flex; /* Utilise flexbox pour aligner le contenu principal */
-            justify-content: center; /* Centre le contenu horizontalement */
-            gap: 30px; /* Espacement entre les colonnes */
-            margin: 30px auto;
-            max-width: 1200px; /* Largeur maximale pour le contenu */
-            flex-wrap: wrap; /* Permet aux colonnes de passer à la ligne sur petits écrans */
-        }
-
-        #file-upload-section,
-        #drive-section,
-        #notes-section {
-            flex: 1; /* Permet aux sections de prendre de l'espace */
-            min-width: 300px; /* Largeur minimale pour éviter le rétrécissement excessif */
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        #file-upload-section {
-            order: 2; /* Ordre visuel */
-        }
-        #drive-section {
-            order: 3; /* Ordre visuel */
-        }
-        #notes-section {
-            order: 1; /* Place la section notes en première position (à gauche) */
-            background-color: #ffe; /* Couleur légèrement différente pour les notes */
-            border: 2px solid #ffc107; /* Bordure jaune */
+            margin-bottom: 25px;
+            font-size: 1.05em;
+            padding: 12px 15px;
+            background-color: #EBF5FB;
+            border-radius: 12px;
+            box-shadow: inset 0 1px 4px rgba(0,0,0,0.05);
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
+            justify-content: center;
+            color: var(--light-text-color);
+            font-family: 'Inter', sans-serif;
         }
-
-        #notes-section h3 {
-            text-align: center;
-            margin-top: 0;
-            color: #333;
-        }
-
-        #notes-input {
-            width: calc(100% - 20px); /* Prend presque toute la largeur */
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box; /* Inclut padding et border dans la largeur */
-            font-size: 1em;
-            resize: vertical; /* Permet de redimensionner la hauteur */
-        }
-
-        #add-note-btn {
-            background: #28a745; /* Vert pour ajouter */
-            color: #fff;
-            border: none;
-            border-radius: 20px;
-            padding: 10px 20px;
+        #drive-path .path-segment {
+            color: var(--primary-color);
             cursor: pointer;
-            font-size: 1em;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        #drive-path .path-segment:hover {
+            text-decoration: underline;
+            color: #3A75D0;
+        }
+        #drive-path .path-separator {
+            margin: 0 8px;
+            color: #888;
+        }
+
+        /* Section Upload Direct Drive */
+        .drive-upload-section {
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #EBF5FB; /* Fond bleu clair */
+            border-radius: var(--border-radius-card);
+            border: 1px solid #B2EBF2;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .drive-upload-section h4 { /* Changé en h4 pour la hiérarchie */
+            font-size: 1.3em;
+            color: var(--primary-color);
             margin-bottom: 20px;
-            display: block; /* Pour centrer si besoin */
+            border-bottom: 1px solid #E0E0E0;
+            padding-bottom: 10px;
+            font-weight: 600;
+        }
+        .drive-upload-section input[type="file"] {
+            display: block;
+            margin: 15px auto;
+            padding: 12px;
+            border: 1px solid #CCC;
+            border-radius: 8px;
+            background-color: #fff;
+            width: calc(100% - 40px); /* Ajuste la largeur */
+            max-width: 380px;
+            font-size: 1em;
+            font-family: 'Inter', sans-serif;
+        }
+        .drive-upload-section button {
+            background: var(--secondary-color);
+        }
+        .drive-upload-section button:hover {
+            background: #218838;
+        }
+
+        /* Section Notes */
+        #notes-input {
+            width: calc(100% - 20px);
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #DDD;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 1.05em;
+            resize: vertical;
+            min-height: 100px;
+            max-height: 250px;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.3s ease;
+        }
+        #notes-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+        }
+        #add-note-btn {
+            background: var(--secondary-color);
+            margin: 0 auto 25px auto;
+            display: block; /* Centrer le bouton */
             width: fit-content;
-            margin: 0 auto 20px auto; /* Centre le bouton */
         }
         #add-note-btn:hover {
             background: #218838;
         }
 
-        #notes-container {
-            display: flex;
-            flex-direction: column; /* Empile les notes verticalement */
-            gap: 10px;
-            flex-grow: 1; /* Permet au conteneur de prendre l'espace restant */
-        }
-
         .note-item {
-            background-color: #fffacd; /* Jaune clair pour les notes */
-            border: 1px solid #ffeb3b;
-            border-radius: 8px;
-            padding: 15px;
+            background-color: #FFFDE7; /* Jaune très clair pour les notes */
+            border: 1px solid #FFECB3;
+            border-radius: 12px;
+            padding: 18px;
             position: relative;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            word-wrap: break-word; /* Important pour les textes longs */
+            box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+            word-wrap: break-word;
+            white-space: pre-wrap; /* Conserve les sauts de ligne */
+            font-size: 1em;
+            line-height: 1.5;
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
         }
-
+        .note-item:not(:last-child) {
+            margin-bottom: 15px; /* Espace entre les notes */
+        }
         .note-item .delete-note-btn {
-            background: #dc3545; /* Rouge pour supprimer */
+            background: var(--danger-color);
             color: #fff;
             border: none;
-            border-radius: 5px;
-            padding: 5px 10px;
-            cursor: pointer;
-            font-size: 0.8em;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.9em;
             position: absolute;
-            top: 5px;
-            right: 5px;
+            top: 10px;
+            right: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .note-item .delete-note-btn:hover {
-            background: #c82333;
+            background: #C82333;
+            transform: scale(1.08);
         }
-        /* ... (ton CSS existant, sans changement) ... */
 
-/* NOUVEAUX STYLES POUR LA STRUCTURE DES COLONNES */
-#main-content-wrapper {
-    display: flex; /* Utilise flexbox pour aligner le contenu principal */
-    justify-content: center; /* Centre le contenu horizontalement */
-    gap: 30px; /* Espacement entre les colonnes */
-    margin: 30px auto;
-    max-width: 1200px; /* Largeur maximale pour le contenu */
-    flex-wrap: wrap; /* Permet aux colonnes de passer à la ligne sur petits écrans */
-}
 
-#file-upload-section,
-#drive-section,
-#notes-section {
-    flex: 1; /* Permet aux sections de prendre de l'espace égal */
-    min-width: 300px; /* Largeur minimale pour éviter le rétrécissement excessif sur petits écrans */
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
+        /* Bannière du bas (Footer) */
+        .bottom-banner {
+            width: 100%;
+            background: var(--footer-bg);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+            position: fixed; /* Reste en bas */
+            left: 0;
+            bottom: 0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+            z-index: 1000;
+            flex-wrap: wrap;
+            gap: 15px; /* Espacement entre les boutons */
+        }
+        .bottom-banner button {
+            background: #3B5066; /* Couleur légèrement plus claire pour les boutons */
+            color: #fff;
+            border: none;
+            border-radius: var(--border-radius-button);
+            padding: 10px 25px;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+        .bottom-banner button:hover {
+            background: #4A627D;
+            transform: translateY(-2px);
+        }
+        .bottom-banner #show-drive-files-btn,
+        .bottom-banner #google-login-btn {
+            background: var(--primary-color);
+        }
+        .bottom-banner #show-drive-files-btn:hover,
+        .bottom-banner #google-login-btn:hover {
+            background: #3A75D0;
+        }
+        #google-user {
+            margin-left: 20px;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.05em;
+        }
 
-#file-upload-section {
-    order: 2; /* Place la section d'upload au milieu */
-}
-#drive-section {
-    order: 3; /* Place la section Drive à droite */
-}
-#notes-section {
-    order: 1; /* Place la section notes en première position (à gauche) */
-    background-color: #fff; /* Fond légèrement différent pour les notes */
-    border: 2px solid #ffc107; /* Bordure jaune pour les notes */
-    display: flex; /* Utilise flexbox pour son contenu interne */
-    flex-direction: column; /* Empile les éléments verticalement */
-}
+        /* Styles pour la modale de confirmation personnalisée */
+        .custom-confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .custom-confirm-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
 
-#notes-section h3 {
-    text-align: center;
-    margin-top: 0;
-    color: #333;
-}
+        .custom-confirm-content {
+            background-color: var(--background-card);
+            padding: 35px;
+            border-radius: var(--border-radius-card);
+            box-shadow: var(--shadow-hover);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        .custom-confirm-modal.show .custom-confirm-content {
+            transform: scale(1);
+        }
 
-#notes-input {
-    width: calc(100% - 20px); /* Prend presque toute la largeur avec padding */
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-sizing: border-box; /* Inclut padding et border dans la largeur */
-    font-size: 1em;
-    resize: vertical; /* Permet à l'utilisateur de redimensionner la hauteur de la zone de texte */
-}
+        .custom-confirm-content p {
+            margin-bottom: 30px;
+            font-size: 1.2em;
+            color: var(--text-color);
+            font-weight: 500;
+        }
 
-#add-note-btn {
-    background: #28a745; /* Vert pour ajouter */
-    color: #fff;
-    border: none;
-    border-radius: 20px;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 1em;
-    margin-bottom: 20px;
-    display: block; /* Pour centrer le bouton */
-    width: fit-content; /* S'adapte au contenu du texte */
-    margin: 0 auto 20px auto; /* Centre le bouton */
-}
-#add-note-btn:hover {
-    background: #218838;
-}
+        .custom-confirm-buttons button {
+            padding: 12px 30px;
+            margin: 0 10px;
+            border-radius: var(--border-radius-button);
+            font-size: 1em;
+            font-weight: 600;
+        }
 
-#notes-container {
-    display: flex;
-    flex-direction: column; /* Empile les notes verticalement */
-    gap: 10px; /* Espacement entre les notes */
-    flex-grow: 1; /* Permet au conteneur de notes de prendre l'espace restant */
-}
+        #confirm-yes {
+            background-color: var(--danger-color);
+        }
+        #confirm-yes:hover {
+            background-color: #C82333;
+        }
+        #confirm-no {
+            background-color: #6C757D;
+        }
+        #confirm-no:hover {
+            background-color: #5A6268;
+        }
 
-.note-item {
-    background-color: #fffacd; /* Jaune clair pour les notes */
-    border: 1px solid #ffeb3b;
-    border-radius: 8px;
-    padding: 15px;
-    position: relative;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    word-wrap: break-word; /* Important pour les textes longs */
-    white-space: pre-wrap; /* Préserve les retours à la ligne et espaces multiples */
-}
+        /* Nouveaux styles pour le lecteur Spotify */
+        .spotify-container {
+            text-align: center;
+            margin: 40px auto;
+            max-width: 700px; /* Adapte la largeur selon ton design */
+            background-color: var(--background-card);
+            border-radius: var(--border-radius-card);
+            box-shadow: var(--shadow-subtle);
+            padding: 30px;
+        }
+        .spotify-container h3 {
+            font-size: 1.8em;
+            color: #1DB954; /* Vert Spotify */
+            margin-top: 0;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #E0E0E0;
+            padding-bottom: 15px;
+            font-weight: 600;
+        }
+        .spotify-container iframe {
+            border-radius: 12px;
+            width: 100%; /* Assure que le lecteur prend toute la largeur disponible */
+            height: 352px; /* Hauteur par défaut pour les embeds Spotify */
+            border: 0;
+        }
 
-.note-item .delete-note-btn {
-    background: #dc3545; /* Rouge pour supprimer */
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-size: 0.8em;
-    position: absolute;
-    top: 5px;
-    right: 5px;
-}
-.note-item .delete-note-btn:hover {
-    background: #c82333;
-}
+        /* Media Queries pour la responsivité */
+        @media (max-width: 1024px) {
+            .main-content-grid {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Plus petit sur les tablettes */
+                padding: 20px;
+            }
+            .section-card {
+                padding: 25px;
+            }
+            .section-card h3 {
+                font-size: 1.6em;
+            }
+            .file-item-card, .drive-item-card {
+                width: calc(50% - 15px); /* Deux colonnes sur les petits écrans */
+            }
+            .spotify-container {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-header {
+                padding: 30px 15px;
+            }
+            .main-header h1 {
+                font-size: 2.2em;
+            }
+            .main-header .subtitle {
+                font-size: 1em;
+            }
+            .roman-signature {
+                font-size: 0.9em;
+                padding: 10px 20px;
+            }
+            .main-content-grid {
+                grid-template-columns: 1fr; /* Une seule colonne sur mobile */
+                padding: 15px;
+                gap: 25px;
+            }
+            .section-card {
+                padding: 20px;
+            }
+            .section-card h3 {
+                font-size: 1.5em;
+            }
+            .file-item-card, .drive-item-card {
+                width: 100%; /* Une colonne sur les très petits écrans */
+            }
+            .bottom-banner {
+                flex-direction: column;
+                padding: 15px 0;
+                gap: 10px;
+            }
+            .bottom-banner button {
+                width: calc(100% - 40px);
+                margin: 0 auto;
+            }
+            #google-user {
+                margin: 10px 0 0 0;
+            }
+            .file-upload-label {
+                font-size: 1em;
+                padding: 10px 20px;
+            }
+            .drive-upload-section input[type="file"] {
+                width: calc(100% - 30px);
+            }
+            .custom-confirm-content {
+                padding: 25px;
+            }
+            .custom-confirm-buttons button {
+                padding: 10px 20px;
+                margin: 0 5px;
+            }
+            .spotify-container {
+                padding: 15px;
+            }
+            .spotify-container h3 {
+                font-size: 1.5em;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="contenu">
-        <h1>Mon site</h1>
-        <div class="roman">
-            <h2>Fait par Roman SOUCY</h2>
-        </div>
-        <p style="text-align: center; max-width: 700px; margin: 30px auto;">
-            Bienvenue sur cette page d'exemple réalisée en HTML, CSS et JAVASCRIPT. Vous pouvez y retrouver un moyen de sauvegarde de fichier (local et Drive), des liens utiles, et une bannière en bas de page pour accéder rapidement aux sites web importants, ainsi qu'une section pour vos notes personnelles.
-        </p>
-
-        <div id="message-display"></div>
-
-        <div id="main-content-wrapper">
-            <div id="notes-section">
-                <h3>Mes Notes Personnelles</h3>
-                <textarea id="notes-input" placeholder="Écrivez votre note ici..."></textarea>
-                <button id="add-note-btn">Ajouter la note</button>
-                <div id="notes-container">
-                    </div>
-            </div>
-
-            <div id="file-upload-section">
-                <h3 style="text-align: center; margin-top: 0;">Fichiers Locaux</h3>
-                <div class="bouton-ajout-image" style="text-align:center; margin: 30px 0;">
-                    <label for="file-upload" style="display:inline-block; background:#00ff15; color:#000; border-radius:20px; padding:10px 20px; cursor:pointer; font-size:1em;">
-                        Importer un fichier
-                        <input id="file-upload" type="file" multiple style="display:none;">
-                    </label>
-                </div>
-                <div id="preview-container" style="display:flex; flex-wrap:wrap; gap:16px; justify-content:center; margin-bottom:40px;"></div>
-            </div>
-
-            <div id="drive-section">
-                <h3 style="text-align: center; margin-top: 0;">Fichiers et Dossiers sur Google Drive</h3>
-                <div id="drive-path" style="text-align: center; margin-bottom: 10px;">
-                    Racine
-                </div>
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <button id="create-folder-btn" style="background:#fbc02d; color:#000; border-radius:20px; padding:10px 20px; cursor:pointer;">
-                        Créer un dossier
-                    </button>
-                </div>
-                <div id="drive-files-container" style="display:flex; flex-wrap:wrap; gap:16px; justify-content:center; margin-bottom:100px;">
-                    <p style="width: 100%; text-align: center; color: #777;">Cliquez sur "Afficher mes fichiers Drive" ci-dessous pour les charger.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="banniere-bas">
-            <button onclick="window.location.href='mailto:roman.soucy@collegedesmuriers.fr'">Contacts</button>
-            <button onclick="window.location.href='https://www.ecoledirecte.com/login?cameFrom=%2FAccueil'">Ecole Directe</button>
-            <button onclick="window.location.href='https://www.google.com'">Google</button>
-            <button id="show-drive-files-btn" style="background:#4285F4;color:#fff;">
-                Afficher mes fichiers Drive
-            </button>
-            <button id="google-login-btn" style="background:#4285F4;color:#fff;">
-                Chargement Google Connexion...
-            </button>
-            <span id="google-user">Déconnecté</span>
+    <div class="main-header">
+        <h1>Mon Tableau de Bord Intégré</h1>
+        <p class="subtitle">Centralisez vos fichiers, notes et accès Google en un seul endroit.</p>
+        <div class="roman-signature">
+            Réalisé par Roman SOUCY
         </div>
     </div>
 
-    <script src="Animation.js"></script> </body>
+    <div id="message-display"></div>
+
+    <div class="spotify-container">
+        <h3>Écoutez sur Spotify</h3>
+        <iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+    <div class="main-content-grid">
+        <div id="notes-section" class="section-card">
+            <h3>Mes Notes Personnelles</h3>
+            <textarea id="notes-input" placeholder="Écrivez votre note ici..."></textarea>
+            <button id="add-note-btn">Ajouter la note</button>
+            <div id="notes-container">
+                <p style="text-align: center; color: var(--light-text-color); margin-top: 20px; font-family: 'Inter', sans-serif;">Vos notes apparaîtront ici.</p>
+            </div>
+        </div>
+
+        <div id="file-upload-section" class="section-card">
+            <h3>Mes Fichiers Locaux</h3>
+            <div style="text-align:center; margin-bottom: 30px;">
+                <label for="file-upload" class="file-upload-label">
+                    Importer un fichier
+                    <input id="file-upload" type="file" multiple>
+                </label>
+            </div>
+            <div id="preview-container">
+                <p style="width: 100%; text-align: center; color: var(--light-text-color); font-family: 'Inter', sans-serif;">Vos fichiers importés localement apparaîtront ici.</p>
+            </div>
+        </div>
+
+        <div id="drive-section" class="section-card">
+            <h3>Google Drive</h3>
+            <div id="drive-path"></div>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <button id="create-folder-btn" style="background:var(--accent-color); color:var(--text-color);">
+                    Créer un dossier
+                </button>
+            </div>
+            <div class="drive-upload-section">
+                <h4>Envoyer directement sur Google Drive</h4>
+                <input type="file" id="direct-drive-upload-input" multiple>
+                <button id="direct-drive-upload-btn">Envoyer les fichiers sélectionnés sur Drive</button>
+            </div>
+            <div id="drive-files-container">
+                <p style="width: 100%; text-align: center; color: var(--light-text-color); font-family: 'Inter', sans-serif;">Connectez-vous à Google Drive pour voir vos fichiers.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-banner">
+        <button onclick="window.location.href='mailto:roman.soucy@collegedesmuriers.fr'">Contacts</button>
+        <button onclick="window.location.href='https://www.ecoledirecte.com/login?cameFrom=%2FAccueil'">Ecole Directe</button>
+        <button onclick="window.location.href='https://www.google.com'">Google</button>
+        <button id="show-drive-files-btn">
+            Afficher mes fichiers Drive
+        </button>
+        <button id="google-login-btn">
+            Connexion Google
+        </button>
+        <span id="google-user">Déconnecté</span>
+    </div>
+
+    <div id="custom-confirm-modal" class="custom-confirm-modal">
+        <div class="custom-confirm-content">
+            <p id="confirm-message"></p>
+            <div class="custom-confirm-buttons">
+                <button id="confirm-yes">Oui</button>
+                <button id="confirm-no">Non</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="Animation.js"></script>
+</body>
 </html>
