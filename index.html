@@ -605,6 +605,32 @@
             background-color: #5A6268;
         }
 
+        /* Nouveaux styles pour le lecteur Spotify */
+        .spotify-container {
+            text-align: center;
+            margin: 40px auto;
+            max-width: 700px; /* Adapte la largeur selon ton design */
+            background-color: var(--background-card);
+            border-radius: var(--border-radius-card);
+            box-shadow: var(--shadow-subtle);
+            padding: 30px;
+        }
+        .spotify-container h3 {
+            font-size: 1.8em;
+            color: #1DB954; /* Vert Spotify */
+            margin-top: 0;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #E0E0E0;
+            padding-bottom: 15px;
+            font-weight: 600;
+        }
+        .spotify-container iframe {
+            border-radius: 12px;
+            width: 100%; /* Assure que le lecteur prend toute la largeur disponible */
+            height: 352px; /* Hauteur par défaut pour les embeds Spotify */
+            border: 0;
+        }
+
         /* Media Queries pour la responsivité */
         @media (max-width: 1024px) {
             .main-content-grid {
@@ -619,6 +645,9 @@
             }
             .file-item-card, .drive-item-card {
                 width: calc(50% - 15px); /* Deux colonnes sur les petits écrans */
+            }
+            .spotify-container {
+                padding: 20px;
             }
         }
 
@@ -676,6 +705,12 @@
                 padding: 10px 20px;
                 margin: 0 5px;
             }
+            .spotify-container {
+                padding: 15px;
+            }
+            .spotify-container h3 {
+                font-size: 1.5em;
+            }
         }
     </style>
 </head>
@@ -690,6 +725,10 @@
 
     <div id="message-display"></div>
 
+    <div class="spotify-container">
+        <h3>Écoutez sur Spotify</h3>
+        <iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
     <div class="main-content-grid">
         <div id="notes-section" class="section-card">
             <h3>Mes Notes Personnelles</h3>
